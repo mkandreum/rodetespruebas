@@ -958,6 +958,8 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
     <!-- Emergency Navigation (works even if main.js fails) -->
     <script>
     (function() {
+        const isLoggedIn = <?php echo json_encode($isLoggedIn); ?>;
+        
         function showPage(pageId) {
             // Hide all pages
             document.querySelectorAll('[data-page]').forEach(page => {
@@ -981,8 +983,9 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
                 });
             });
             
-            // Show home page by default
-            setTimeout(() => showPage('home'), 100);
+            // Show admin page if logged in, otherwise home
+            const defaultPage = isLoggedIn ? 'admin' : 'home';
+            setTimeout(() => showPage(defaultPage), 100);
         });
     })();
     </script>
