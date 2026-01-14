@@ -1,6 +1,6 @@
 // === Content Manager Feature Module ===
 
-import { UPLOAD_URL } from '../../core/constants.js';
+import { API_ENDPOINTS } from '../../core/constants.js';
 import { appState, setAllTickets, setAllMerchSales, allTickets, allMerchSales } from '../../core/state.js';
 import { saveAppState, saveTicketState, saveMerchSalesState } from '../../api/init.js'; //init.js loads data but specific api files save it
 import { saveTicketsState as apiSaveTickets } from '../../api/tickets-api.js'; // Fix import name
@@ -151,7 +151,7 @@ export async function handleFileUpload(event, targetInput) {
     formData.append('type', fileTypeForUpload);
 
     try {
-        const response = await fetch(UPLOAD_URL, {
+        const response = await fetch(API_ENDPOINTS.UPLOAD, {
             method: 'POST',
             body: formData
         });
@@ -219,7 +219,7 @@ export async function handleMultipleFileUpload(event, hiddenInputId, gridContain
         formData.append('type', 'image');
 
         uploadPromises.push(
-            fetch(UPLOAD_URL, { method: 'POST', body: formData })
+            fetch(API_ENDPOINTS.UPLOAD, { method: 'POST', body: formData })
                 .then(response => response.json().then(result => ({ ok: response.ok, status: response.status, result })))
                 .then(({ ok, status, result }) => {
                     if (ok && result.success && result.url) {
