@@ -105,7 +105,11 @@ function setupEventListeners() {
 		});
 	});
 
-	if (domRefs.logoBtn) addTrackedListener(domRefs.logoBtn, 'click', (e) => { e.preventDefault(); showPage('home'); });
+	if (domRefs.logoBtn) addTrackedListener(domRefs.logoBtn, 'click', (e) => {
+		e.preventDefault();
+		handleAdminMenuTap();
+		showPage('home');
+	});
 
 	// Button "Ver todos los eventos" 
 	const viewAllEventsBtn = document.getElementById('view-all-events-btn');

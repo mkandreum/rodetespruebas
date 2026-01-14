@@ -255,7 +255,12 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
     <header class="bg-black border-b-2 border-white left-0 right-0 z-40 header-main">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
-                <div id="main-nav" class="flex flex-grow justify-center items-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar py-2">
+                <div class="flex items-center flex-shrink-0 mr-4">
+                    <button id="logo-btn" data-nav="home" class="focus:outline-none transition-opacity hover:opacity-80 flex-shrink-0">
+                        <img id="header-logo-img" src="https://placehold.co/200x80/000/fff?text=RODETES&font=vt323" alt="Logo Rodetes" class="h-12 sm:h-16 w-auto object-contain">
+                    </button>
+                </div>
+                <div id="main-nav" class="flex flex-grow justify-end items-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar py-2">
                     <a href="#" data-nav="home" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors text-glow-white whitespace-nowrap">INICIO</a>
                     <a href="#" data-nav="events" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors whitespace-nowrap">EVENTOS</a>
                     <a href="#" data-nav="gallery" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors whitespace-nowrap">GALERÍA</a>
