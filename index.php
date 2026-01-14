@@ -73,7 +73,6 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
 
     <!-- Hoja de estilos principal -->
     <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="style.css">
 
     <style>
 /* Variables para el color neón (JS las actualizará) */

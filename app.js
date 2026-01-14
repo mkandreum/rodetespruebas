@@ -1,46 +1,46 @@
 // === RODETES PARTY MAIN APP MODULE ===
 
 // Core & UI
-import { domRefs, initDOMRefs } from './js/ui/dom-refs.js';
-import { loadInitialData, syncTicketCounters } from './js/api/init.js';
-import { appState, isLoggedIn } from './js/core/state.js';
-import { addTrackedListener } from './js/ui/event-listeners.js';
-import { showPage, showAdminPage } from './js/ui/navigation.js';
-import { showInfoModal, closeModal, showLoading, handleImageModalPrev, handleImageModalNext } from './js/ui/modals.js';
+import { domRefs, initDOMRefs } from './scripts/ui/dom-refs.js';
+import { loadInitialData, syncTicketCounters } from './scripts/api/init.js';
+import { appState, isLoggedIn } from './scripts/core/state.js';
+import { addTrackedListener } from './scripts/ui/event-listeners.js';
+import { showPage, showAdminPage } from './scripts/ui/navigation.js';
+import { showInfoModal, closeModal, showLoading, handleImageModalPrev, handleImageModalNext } from './scripts/ui/modals.js';
 
 // Features - Auth
-import { handleLogin, handleLogout, checkAdminUI } from './js/features/auth/auth.js';
+import { handleLogin, handleLogout, checkAdminUI } from './scripts/features/auth/auth.js';
 
 // Features - Content
-import { renderAppLogo } from './js/features/content/logo.js';
-import { renderBannerVideo } from './js/features/content/banner.js';
-import { renderNextEventPromo } from './js/features/content/promo.js';
-import { handleSaveContent, handleFileUpload, handleMultipleFileUpload, handleBackup, handleRestore, loadContentToAdmin } from './js/features/content/content-manager.js';
+import { renderAppLogo } from './scripts/features/content/logo.js';
+import { renderBannerVideo } from './scripts/features/content/banner.js';
+import { renderNextEventPromo } from './scripts/features/content/promo.js';
+import { handleSaveContent, handleFileUpload, handleMultipleFileUpload, handleBackup, handleRestore, loadContentToAdmin } from './scripts/features/content/content-manager.js';
 
 // Features - Events
-import { renderHomeEvents, renderPublicEvents, handleEmailSubmit, handleDownloadTicketQr } from './js/features/events/events-public.js';
-import { renderAdminEvents, handleSaveEvent, handleEditEventClick, handleDeleteEvent, handleArchiveEvent, handleViewTickets, resetEventForm } from './js/features/events/events-admin.js';
+import { renderHomeEvents, renderPublicEvents, handleEmailSubmit, handleDownloadTicketQr } from './scripts/features/events/events-public.js';
+import { renderAdminEvents, handleSaveEvent, handleEditEventClick, handleDeleteEvent, handleArchiveEvent, handleViewTickets, resetEventForm } from './scripts/features/events/events-admin.js';
 
 // Features - Drags
-import { renderDragList } from './js/features/drags/drags-public.js';
-import { renderAdminDrags, handleSaveDrag, handleEditDragClick, handleDeleteDrag, resetDragForm } from './js/features/drags/drags-admin.js';
+import { renderDragList } from './scripts/features/drags/drags-public.js';
+import { renderAdminDrags, handleSaveDrag, handleEditDragClick, handleDeleteDrag, resetDragForm } from './scripts/features/drags/drags-admin.js';
 
 // Features - Merch
-import { renderMerchPage, handleMerchPurchase, handleDownloadMerchQr } from './js/features/merch/merch-public.js';
-import { renderAdminMerch, handleSaveMerchItem, handleEditMerchItemClick, handleDeleteMerchItem, handleAdminMerchDragSelect, handleViewMerchSales, renderAdminMerchSalesSummary, resetMerchItemForm } from './js/features/merch/merch-admin.js';
+import { renderMerchPage, handleMerchPurchase, handleDownloadMerchQr } from './scripts/features/merch/merch-public.js';
+import { renderAdminMerch, handleSaveMerchItem, handleEditMerchItemClick, handleDeleteMerchItem, handleAdminMerchDragSelect, handleViewMerchSales, renderAdminMerchSalesSummary, resetMerchItemForm } from './scripts/features/merch/merch-admin.js';
 // Note: handleMerchPurchaseSubmit is handleMerchPurchase in my file? 
 // Let's check 'merch-public.js'. It exports 'handleMerchPurchase' (triggered by form submit).
 // So I map handleMerchPurchaseSubmit -> handleMerchPurchase.
 
 // Features - Gallery
-import { renderGalleryEventList, renderPastGalleries, renderGalleryImages } from './js/features/gallery/gallery-public.js';
-import { renderAdminGalleryEventSelect, handleGalleryEventSelect, handleGalleryImageUpload, handleSaveGalleryChanges } from './js/features/gallery/gallery-admin.js';
+import { renderGalleryEventList, renderPastGalleries, renderGalleryImages } from './scripts/features/gallery/gallery-public.js';
+import { renderAdminGalleryEventSelect, handleGalleryEventSelect, handleGalleryImageUpload, handleSaveGalleryChanges } from './scripts/features/gallery/gallery-admin.js';
 
 // Features - Giveaway
-import { renderGiveawayEvents, handleGiveaway } from './js/features/giveaway/giveaway.js';
+import { renderGiveawayEvents, handleGiveaway } from './scripts/features/giveaway/giveaway.js';
 
 // Features - Scanner
-import { startScanner, stopScanner, handleScannerConfirm, handleScannerCancel } from './js/features/scanner/tickets-scanner.js';
+import { startScanner, stopScanner, handleScannerConfirm, handleScannerCancel } from './scripts/features/scanner/tickets-scanner.js';
 
 
 // === Easter Egg Logic ===
