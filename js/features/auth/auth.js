@@ -1,6 +1,6 @@
 // === Auth Logic Module ===
 
-import { LOGIN_URL, LOGOUT_URL } from '../../core/constants.js';
+import { API_ENDPOINTS } from '../../core/constants.js';
 import { setIsLoggedIn, setAdminEmail, isLoggedIn } from '../../core/state.js'; // isLoggedIn needed?
 import { showLoading, showInfoModal } from '../../ui/modals.js';
 import { checkAdminUI, showPage, showAdminPage } from '../../ui/navigation.js';
@@ -35,7 +35,7 @@ export async function handleAdminLogin(e) {
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-        const response = await fetch(LOGIN_URL, {
+        const response = await fetch(API_ENDPOINTS.LOGIN, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email, hash: passwordHash })
@@ -77,7 +77,7 @@ export async function handleAdminLogin(e) {
 export async function handleLogout(showSuccess = true) {
     showLoading(true);
     try {
-        const response = await fetch(LOGOUT_URL, { method: 'POST' });
+        const response = await fetch(API_ENDPOINTS.LOGOUT, { method: 'POST' });
 
         if (!response.ok) {
             console.warn(`Logout request failed with status ${response.status}`);
