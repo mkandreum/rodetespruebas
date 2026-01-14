@@ -1,7 +1,7 @@
 // === RODETES PARTY MAIN APP MODULE ===
 
 // Core & UI
-import { domRefs } from './js/ui/dom-refs.js';
+import { domRefs, initDOMRefs } from './js/ui/dom-refs.js';
 import { loadInitialData, syncTicketCounters } from './js/api/init.js';
 import { appState, isLoggedIn } from './js/core/state.js';
 import { addTrackedListener } from './js/ui/event-listeners.js';
@@ -63,6 +63,9 @@ function handleAdminMenuTap() {
 // === INIT ===
 document.addEventListener('DOMContentLoaded', async () => {
 	console.log("🚀 Rodetes App Starting...");
+
+	// 0. Initialize DOM References FIRST
+	initDOMRefs();
 
 	// 1. Load Data
 	await loadInitialData();
