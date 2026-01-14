@@ -1,4 +1,9 @@
 <?php
+// Force no-cache headers
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 // --- PHP: Cargar Datos del Servidor ---
 
 // --- Seguridad: Evitar acceso directo a PHP ---
@@ -71,8 +76,22 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
     <!-- JSZip (para backup/restore) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    <!-- Hoja de estilos principal -->
     <link rel="stylesheet" href="style.css">
+    <script>
+    // Emergency Service Worker and Cache Purge
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister().then(() => console.log('SW Unregistered'));
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (let name of names) caches.delete(name);
+      });
+    }
+    </script>
 
     <style>
 /* Variables para el color neón (JS las actualizará) */
@@ -256,6 +275,21 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
                         <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
                         <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
+                    <script>
+                        // Fail-safe Mobile Menu Toggle
+                        (function() {
+                            const btn = document.getElementById('mobile-menu-btn');
+                            const menu = document.getElementById('mobile-menu');
+                            if (btn && menu) {
+                                btn.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    menu.classList.toggle('hidden');
+                                    console.log('Menu toggled via inline script');
+                                });
+                            }
+                        })();
+                    </script>
                 </div>
             </div>
         </nav>
@@ -947,7 +981,7 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
     </script>
 
     <!--  App Principal (Carga diferida) -->
-    <script type="module" src="app.js?v=<?php echo time(); ?>"></script>
+    <script type="module" src="main.js?v=<?php echo time(); ?>"></script>
 
 </body>
 </html>
