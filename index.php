@@ -255,24 +255,68 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
     <header class="bg-black border-b-2 border-white left-0 right-0 z-40 header-main">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
-                <div class="flex items-center flex-shrink-0 mr-4">
-                    <button id="logo-btn" data-nav="home" class="focus:outline-none transition-opacity hover:opacity-80 flex-shrink-0">
-                        <img id="header-logo-img" src="https://placehold.co/200x80/000/fff?text=RODETES&font=vt323" alt="Logo Rodetes" class="h-12 sm:h-16 w-auto object-contain">
+                <div class="flex items-center flex-grow min-w-0 mr-4">
+                    <button id="logo-btn" data-nav="home" class="focus:outline-none transition-opacity hover:opacity-80 flex-shrink-0 mr-4">
+                        <div>
+                            <img id="header-logo-img" src="https://placehold.co/200x80/000/fff?text=RODETES&font=vt323" alt="Logo Rodetes" class="h-16 w-auto object-contain">
+                        </div>
                     </button>
+                    </div>
+                <div id="main-nav" class="hidden sm:flex flex-shrink-0 justify-center items-center gap-4 sm:gap-8">
+                    <a href="#" data-nav="home" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors text-glow-white">INICIO</a>
+                    <a href="#" data-nav="events" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">EVENTOS</a>
+                    <a href="#" data-nav="gallery" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">GALERÍA</a>
+                    <a href="#" data-nav="merch" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">MERCH</a>
+                    <a href="#" data-nav="drags" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">DRAGS</a>
                 </div>
-                <div id="main-nav" class="flex flex-grow justify-end items-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar py-2">
-                    <a href="#" data-nav="home" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors text-glow-white whitespace-nowrap">INICIO</a>
-                    <a href="#" data-nav="events" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors whitespace-nowrap">EVENTOS</a>
-                    <a href="#" data-nav="gallery" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors whitespace-nowrap">GALERÍA</a>
-                    <a href="#" data-nav="merch" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors whitespace-nowrap">MERCH</a>
-                    <a href="#" data-nav="drags" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors whitespace-nowrap">DRAGS</a>
-                    <a href="#" data-nav="admin" class="font-pixel uppercase text-lg text-gray-300 hover:text-white transition-colors whitespace-nowrap border border-white px-2 py-1 <?php echo $isLoggedIn ? '' : 'hidden'; ?>" id="main-nav-admin-link">ADMIN</a>
+                <div class="flex-shrink-0 ml-4 sm:ml-0">
+                    <button id="mobile-menu-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-gray-300 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Abrir menú principal</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                    <script>
+                        // Fail-safe Mobile Menu Toggle
+                        (function() {
+                            const btn = document.getElementById('mobile-menu-btn');
+                            const menu = document.getElementById('mobile-menu');
+                            if (btn && menu) {
+                                btn.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    menu.classList.toggle('hidden');
+                                    console.log('Menu toggled via inline script');
+                                });
+                            }
+                        })();
+                    </script>
                 </div>
             </div>
         </nav>
+        <div id="mobile-menu" class="hidden absolute top-20 right-4 z-50 bg-black border-2 border-white w-64 shadow-lg shadow-white/30 rounded-none">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#" data-nav="home" class="font-pixel text-lg text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md">INICIO</a>
+                <a href="#" data-nav="events" class="font-pixel text-lg text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md">EVENTOS</a>
+                <a href="#" data-nav="gallery" class="font-pixel text-lg text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md">GALERÍA</a>
+                <a href="#" data-nav="merch" class="font-pixel text-lg text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md">MERCH</a>
+                <a href="#" data-nav="drags" class="font-pixel text-lg text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md">DRAGS</a>
+                <a href="#" data-nav="admin" class="font-pixel text-lg text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md <?php echo $isLoggedIn ? '' : 'hidden'; ?>">ADMIN</a>
+            </div>
+        </div>
     </header>
 
-
+    <!-- ==== NAV SECUNDARIA (MÓVIL) ==== -->
+    <div id="secondary-nav-container" class="fixed top-[80px] left-0 right-0 z-30 bg-black border-b border-gray-700 sm:hidden">
+        <nav id="secondary-nav" class="container mx-auto px-4 py-2">
+            <div class="flex justify-around items-center gap-4">
+                <a href="#" data-nav="home" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors text-glow-white">INICIO</a>
+                <a href="#" data-nav="events" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">EVENTOS</a>
+                <a href="#" data-nav="gallery" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">GALERÍA</a>
+                <a href="#" data-nav="merch" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">MERCH</a>
+                <a href="#" data-nav="drags" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">DRAGS</a>
+            </div>
+        </nav>
+    </div>
 
     <!-- ==== CONTENIDO PRINCIPAL ==== -->
     <main class="container mx-auto p-4 sm:p-6 lg:p-8">
