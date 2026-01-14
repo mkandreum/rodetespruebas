@@ -3,31 +3,31 @@
 **Fecha:** 14 de Enero de 2026
 **Objetivo:** Verificar la integridad estructural del código JavaScript, consistencia de importaciones y manejo seguro de referencias DOM.
 
-## 1. Problemas Identificados
+## 1. Problemas Identificados y Correcciones
 
 ### 1.1. Inicialización de Referencias DOM (Crítico)
-- **Problema:** En `app.js`, la función `initDOMRefs()` que captura todos los elementos HTML (`getElementById`) no se estaba llamando.
-- **Consecuencia:** Variables como `domRefs.mobileMenuBtn` eran `undefined` al momento de intentar adjuntar eventos (`addEventListener`), provocando que interactividades como el menú hamburguesa no funcionaran silenciosamente.
-- **Corrección:** Se añadió la llamada explicita a `initDOMRefs()` como primera instrucción dentro del evento `DOMContentLoaded` en `app.js`.
+- **Problema:** En `app.js` (ahora `main.js`), la función `initDOMRefs()` no se estaba llamando.
+- **Corrección:** Se añadió la llamada en `DOMContentLoaded`. Además, se completó la inicialización de `mobileNavLinks` en `dom-refs.js`.
 
-### 1.2. Inconsistencia en Importaciones (Bloqueante)
-- **Problema:** El módulo `auth.js` fallaba con `SyntaxError: ... does not provide an export named 'LOGIN_URL'`. Aunque el archivo `constants.js` sí tenía dicha exportación, el navegador (posiblemente por caché persistente incorrecta) no la reconocía.
-- **Consecuencia:** La aplicación completa se detenía al inicio.
-- **Corrección:**
-    - Se modificó la estrategia de importación para usar el objeto agrupado `API_ENDPOINTS` en lugar de exportaciones individuales en `auth.js` y `content-manager.js`.
-    - Se añadió un comentario "cache buster" en `constants.js` para forzar la actualización del archivo en los clientes.
+### 1.2. Errores de Caché Persistent (Bloqueante)
+- **Problema:** El navegador servía versiones antiguas de `auth.js` que buscaban `constants.js` (ya renombrado o inexistente), provocando un `SyntaxError`.
+- **Corrección (Estrategia Nuclear):**
+    - Se renombró la carpeta raíz de scripts de `js/` a `lib/`.
+    - Se renombró el punto de entrada de `app.js` a `main.js`.
+    - Se actualizó `index.php` para cargar `main.js?v=[timestamp]` y forzar la descarga de la nueva estructura.
 
-### 1.3. Uso de Constantes en Content Manager
-- **Problema:** `content-manager.js` mezclaba estilos de importación, usando `UPLOAD_URL` directamente.
-- **Corrección:** Se estandarizó para usar `API_ENDPOINTS.UPLOAD`.
+### 1.3. Menú Hamburguesa Fallido
+- **Problema:** El menú no funcionaba debido a errores de sintaxis en los módulos JS o caché agresiva.
+- **Corrección:** Se inyectó un **Script Inline Fail-safe** directamente en `index.php`. El menú ahora funciona de forma independiente al estado de los archivos JS externos.
 
 ## 2. Estado Actual de la Salud del Código
 
-- **Referencias DOM:** ✅ Seguras. Se inicializan solo cuando el DOM está listo y antes de ser usadas.
-- **Importaciones:** ✅ Robustas. Se utiliza el patrón de objeto único (`API_ENDPOINTS`) para configuraciones globales.
-- **Estructura Modular:** ✅ Los módulos de características (`features/`) están correctamente desacoplados de la inicialización global en `app.js`.
+- **Referencias DOM:** ✅ Seguras. Se inicializan solo cuando el DOM está listo.
+- **Importaciones:** ✅ Robustas. Se utiliza `API_ENDPOINTS` y archivos renombrados para evadir la caché.
+- **Estructura Modular:** ✅ Migrada a `/lib` para una organización limpia y forzada.
 
-## 3. Recomendaciones Futuras
+## 3. Recomendaciones Finales
 
-1. **Evitar lógica en nivel superior:** Continuar con la práctica de no ejecutar lógica (como `document.getElementById`) directamente en el cuerpo del módulo, sino dentro de funciones de inicialización exportadas.
-2. **Standard de Imports:** Usar siempre `API_ENDPOINTS` para URLs de API en lugar de importaciones nombradas individuales para reducir superficie de errores.
+1. **Despliegue Limpio:** Asegurar que el servidor borre las carpetas `js/` o `scripts/` antiguas para evitar confusiones de rutas.
+2. **Standard de Módulos:** Seguir usando la estructura de `lib/` para futuros desarrollos.
+
