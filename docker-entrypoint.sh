@@ -11,5 +11,12 @@ echo "Corrigiendo permisos de carpetas de datos..."
 chown -R www-data:www-data /var/www/data_private
 chown -R www-data:www-data /var/www/html/uploads
 
+# Limpiar carpetas antiguas de código (js/ y scripts/)
+echo "Limpiando carpetas antiguas de código..."
+rm -rf /var/www/html/js
+rm -rf /var/www/html/scripts
+rm -f /var/www/html/app.js
+echo "Limpieza completada."
+
 # Continuar con el comando por defecto del contenedor
 exec "$@"
