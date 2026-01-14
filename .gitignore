@@ -1,0 +1,33 @@
+# Carpetas antiguas (no deben existir)
+/js/
+/scripts/
+/app.js
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos temporales
+*.tmp
+*.bak
+
+# Node modules (si se usa en futuro)
+node_modules/
+
+# Archivos de entorno
+.env
+.env.local
+
+# Uploads (datos de usuario)
+uploads/*
+!uploads/.gitkeep
+
+# Datos privados del servidor
+/var/www/data_private/
+data_private/
