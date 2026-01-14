@@ -268,6 +268,7 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
                     <a href="#" data-nav="gallery" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">GALERÍA</a>
                     <a href="#" data-nav="merch" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">MERCH</a>
                     <a href="#" data-nav="drags" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">DRAGS</a>
+                    <a href="#" data-nav="admin" class="font-pixel uppercase text-lg text-gray-500 hover:text-white transition-colors">ADMIN</a>
                 </div>
             </div>
         </nav>
