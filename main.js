@@ -111,15 +111,6 @@ function setupEventListeners() {
 	const viewAllEventsBtn = document.getElementById('view-all-events-btn');
 	if (viewAllEventsBtn) addTrackedListener(viewAllEventsBtn, 'click', (e) => { e.preventDefault(); showPage('events'); });
 
-	// Mobile Menu
-	if (domRefs.mobileMenuBtn) {
-		addTrackedListener(domRefs.mobileMenuBtn, 'click', (e) => {
-			e.preventDefault();
-			handleAdminMenuTap();
-			domRefs.mobileMenu?.classList.toggle('hidden');
-		});
-	}
-
 	// Auth
 	if (domRefs.loginForm) addTrackedListener(domRefs.loginForm, 'submit', handleLogin);
 	if (domRefs.logoutBtn) addTrackedListener(domRefs.logoutBtn, 'click', () => handleLogout(true));
