@@ -2,7 +2,7 @@
 
 // Core & UI
 import { domRefs, initDOMRefs } from './lib/ui/dom-refs.js';
-import { loadInitialData, syncTicketCounters } from './lib/api/init.js';
+import { loadInitialDataFromServer, syncTicketCounters } from './lib/api/init.js';
 import { appState, isLoggedIn } from './lib/core/state.js';
 import { addTrackedListener } from './lib/ui/event-listeners.js';
 import { showPage, showAdminPage } from './lib/ui/navigation.js';
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	initDOMRefs();
 
 	// 1. Load Data
-	await loadInitialData();
+	await loadInitialDataFromServer();
 	await syncTicketCounters();
 
 	// 2. Initial Renders
