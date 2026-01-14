@@ -950,6 +950,11 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
         window.PHP_ADMIN_EMAIL = <?php echo json_encode($adminEmail); ?>;
     </script>
 
+    <!-- Version Indicator (for debugging) -->
+    <div style="position:fixed;bottom:10px;right:10px;background:rgba(0,0,0,0.8);color:#0f0;padding:5px 10px;font-family:monospace;font-size:10px;z-index:9999;border:1px solid #0f0;">
+        v2026.01.14-lib
+    </div>
+
     <!--  App Principal (Carga diferida) -->
     <script type="module" src="main.js?v=<?php echo time(); ?>"></script>
 
