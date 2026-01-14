@@ -1,7 +1,7 @@
 // === Modals Module ===
 
 import { domRefs } from './dom-refs.js';
-import { SUCCESS_KEYWORDS, PLACEHOLDERS } from '../core/constants.js';
+import { SUCCESS_KEYWORDS, PLACEHOLDERS } from '../core/config.js';
 import { clearDynamicListListeners } from './event-listeners.js';
 import {
     currentImageModalGallery,

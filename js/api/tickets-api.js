@@ -1,6 +1,6 @@
 // === Tickets API Module ===
 
-import { API_ENDPOINTS } from '../core/constants.js';
+import { API_ENDPOINTS } from '../core/config.js';
 import { allTickets } from '../core/state.js';
 
 /**

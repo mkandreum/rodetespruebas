@@ -1,6 +1,6 @@
 // === Auth Logic Module ===
 
-import { API_ENDPOINTS } from '../../core/constants.js';
+import { API_ENDPOINTS } from '../../core/config.js';
 import { setIsLoggedIn, setAdminEmail, isLoggedIn } from '../../core/state.js'; // isLoggedIn needed?
 import { showLoading, showInfoModal } from '../../ui/modals.js';
 import { checkAdminUI, showPage, showAdminPage } from '../../ui/navigation.js';

@@ -1,6 +1,6 @@
 // === Content Manager Feature Module ===
 
-import { API_ENDPOINTS } from '../../core/constants.js';
+import { API_ENDPOINTS } from '../../core/config.js';
 import { appState, setAllTickets, setAllMerchSales, allTickets, allMerchSales } from '../../core/state.js';
 import { saveAppState, saveTicketState, saveMerchSalesState } from '../../api/init.js'; //init.js loads data but specific api files save it
 import { saveTicketsState as apiSaveTickets } from '../../api/tickets-api.js'; // Fix import name

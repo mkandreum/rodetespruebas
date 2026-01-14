@@ -1,6 +1,6 @@
 // === App State API Module ===
 
-import { API_ENDPOINTS } from '../core/constants.js';
+import { API_ENDPOINTS } from '../core/config.js';
 import { fetchJSON } from './api-client.js';
 import { appState } from '../core/state.js';
 
