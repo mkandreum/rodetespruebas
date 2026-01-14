@@ -105,15 +105,20 @@ function setupEventListeners() {
 		});
 	});
 
-	if (domRefs.logoBtn) addTrackedListener(domRefs.logoBtn, 'click', (e) => {
-		e.preventDefault();
-		handleAdminMenuTap();
-		showPage('home');
-	});
+	if (domRefs.logoBtn) addTrackedListener(domRefs.logoBtn, 'click', (e) => { e.preventDefault(); showPage('home'); });
 
 	// Button "Ver todos los eventos" 
 	const viewAllEventsBtn = document.getElementById('view-all-events-btn');
 	if (viewAllEventsBtn) addTrackedListener(viewAllEventsBtn, 'click', (e) => { e.preventDefault(); showPage('events'); });
+
+	// Mobile Menu
+	if (domRefs.mobileMenuBtn) {
+		addTrackedListener(domRefs.mobileMenuBtn, 'click', (e) => {
+			e.preventDefault();
+			handleAdminMenuTap();
+			domRefs.mobileMenu?.classList.toggle('hidden');
+		});
+	}
 
 	// Auth
 	if (domRefs.loginForm) addTrackedListener(domRefs.loginForm, 'submit', handleLogin);
