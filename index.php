@@ -955,6 +955,38 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
         v2026.01.14-lib
     </div>
 
+    <!-- Emergency Navigation (works even if main.js fails) -->
+    <script>
+    (function() {
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('[data-page]').forEach(page => {
+                page.classList.add('hidden');
+            });
+            // Show selected page
+            const targetPage = document.querySelector(`[data-page="${pageId}"]`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                console.log('Emergency nav: Showing page', pageId);
+            }
+        }
+        
+        // Attach click handlers to all navigation links
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-nav]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = e.currentTarget.getAttribute('data-nav');
+                    showPage(pageId);
+                });
+            });
+            
+            // Show home page by default
+            setTimeout(() => showPage('home'), 100);
+        });
+    })();
+    </script>
+
     <!--  App Principal (Carga diferida) -->
     <script type="module" src="main.js?v=<?php echo time(); ?>"></script>
 
