@@ -1,19 +1,19 @@
 
-import { store } from '../store.js';
-import { showInfoModal, showLoading } from '../ui.js';
-import { saveAppState, saveTicketState, saveMerchSalesState } from '../api.js';
-import { readFileAsText, readFileAsArrayBuffer } from '../utils.js';
-import { renderAppLogo } from './settings.js';
-import { renderNextEventPromo } from './home.js';
-import { renderPublicEvents as rPE, renderHomeEvents as rHE } from './events.js';
-import { renderGalleryEventList as rGE, renderPastGalleries as rPG } from './gallery.js';
-import { renderDragList as rDL } from './drags.js';
-import { renderAdminEvents } from './events_admin.js';
-import { renderAdminDrags } from './drags_admin.js';
-import { renderAdminMerch } from './merch_admin.js';
-import { renderGiveawayEvents } from './giveaway.js';
-import { checkAdminUI } from './admin.js';
-import { loadContentToAdmin } from './settings.js';
+import { store } from '/js/store.js';
+import { showInfoModal, showLoading } from '/js/ui.js';
+import { saveAppState, saveTicketState, saveMerchSalesState } from '/js/api.js';
+import { readFileAsText, readFileAsArrayBuffer } from '/js/utils.js';
+import { renderAppLogo } from '/js/settings.js';
+import { renderNextEventPromo } from '/js/home.js';
+import { renderPublicEvents as rPE, renderHomeEvents as rHE } from '/js/events.js';
+import { renderGalleryEventList as rGE, renderPastGalleries as rPG } from '/js/gallery.js';
+import { renderDragList as rDL } from '/js/drags.js';
+import { renderAdminEvents } from '/js/events_admin.js';
+import { renderAdminDrags } from '/js/drags_admin.js';
+import { renderAdminMerch } from '/js/merch_admin.js';
+import { renderGiveawayEvents } from '/js/giveaway.js';
+import { checkAdminUI } from '/js/admin.js';
+import { loadContentToAdmin } from '/js/settings.js';
 
 export async function handleBackup() {
     if (typeof JSZip === 'undefined') {

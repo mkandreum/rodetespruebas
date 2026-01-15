@@ -1,6 +1,6 @@
 
-import { store } from '../store.js';
-import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading } from '../ui.js';
+import { store } from '/js/store.js';
+import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading } from '/js/ui.js';
 
 export function renderGiveawayEvents(events) {
     clearDynamicListListeners('giveaway');

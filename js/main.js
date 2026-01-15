@@ -1,20 +1,20 @@
 
-import { loadInitialData, store } from './store.js';
-import { showPage, showAdminPage } from './router.js';
-import { handleEmailFormSubmit } from './features/tickets.js';
-import { closeModal, initScrollObserver } from './ui.js';
-import { handleAdminLogin, handleLogout, checkAdminUI, handleAdminMenuTap } from './features/admin.js';
-import { handleSaveEvent, resetEventForm } from './features/events_admin.js';
-import { handleSaveDrag, resetDragForm } from './features/drags_admin.js';
-import { handleSaveMerchItem, resetMerchItemForm, handleAdminMerchDragSelect } from './features/merch_admin.js';
-import { handleSaveContent, loadContentToAdmin as loadSettingsToAdmin } from './features/settings.js';
-import { startScanner, stopScanner, handleScannerConfirm, handleScannerCancel } from './features/scanner.js';
-import { handleBackup, handleRestore } from './features/backup.js';
-import { handleMultipleFileUpload, handleFileUpload } from './features/upload.js';
-import { handleSaveGallery, handleGalleryEventSelect, renderAdminGalleryGrid } from './features/gallery_admin.js';
-import { renderGalleryEventList } from './features/gallery.js';
-import { handleMerchPurchaseSubmit } from './features/merch.js';
-import { handleDownloadTicket } from './features/tickets.js';
+import { loadInitialData, store } from '/js/store.js';
+import { showPage, showAdminPage } from '/js/router.js';
+import { handleEmailFormSubmit } from '/js/features/tickets.js';
+import { closeModal, initScrollObserver } from '/js/ui.js';
+import { handleAdminLogin, handleLogout, checkAdminUI, handleAdminMenuTap } from '/js/features/admin.js';
+import { handleSaveEvent, resetEventForm } from '/js/features/events_admin.js';
+import { handleSaveDrag, resetDragForm } from '/js/features/drags_admin.js';
+import { handleSaveMerchItem, resetMerchItemForm, handleAdminMerchDragSelect } from '/js/features/merch_admin.js';
+import { handleSaveContent, loadContentToAdmin as loadSettingsToAdmin } from '/js/features/settings.js';
+import { startScanner, stopScanner, handleScannerConfirm, handleScannerCancel } from '/js/features/scanner.js';
+import { handleBackup, handleRestore } from '/js/features/backup.js';
+import { handleMultipleFileUpload, handleFileUpload } from '/js/features/upload.js';
+import { handleSaveGallery, handleGalleryEventSelect, renderAdminGalleryGrid } from '/js/features/gallery_admin.js';
+import { renderGalleryEventList } from '/js/features/gallery.js';
+import { handleMerchPurchaseSubmit } from '/js/features/merch.js';
+import { handleDownloadTicket } from '/js/features/tickets.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("Initializing Modular App...");

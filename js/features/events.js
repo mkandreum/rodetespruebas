@@ -1,9 +1,9 @@
 
-import { store } from '../store.js';
-import { addTrackedListener, clearDynamicListListeners, showInfoModal, closeModal } from '../ui.js';
-import { showPage } from '../router.js';
-import { renderGalleryImages } from './gallery.js';
-import { openTicketModal } from './tickets.js';
+import { store } from '/js/store.js';
+import { addTrackedListener, clearDynamicListListeners, showInfoModal, closeModal } from '/js/ui.js';
+import { showPage } from '/js/router.js';
+import { renderGalleryImages } from '/js/gallery.js';
+import { openTicketModal } from '/js/tickets.js';
 
 export function renderPublicEvents(events) {
     clearDynamicListListeners('publicEvents');

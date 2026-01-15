@@ -1,7 +1,7 @@
 
-import { store } from '../store.js';
-import { addTrackedListener, clearDynamicListListeners, showImageModal } from '../ui.js';
-import { showPage } from '../router.js';
+import { store } from '/js/store.js';
+import { addTrackedListener, clearDynamicListListeners, showImageModal } from '/js/ui.js';
+import { showPage } from '/js/router.js';
 
 export function renderGalleryEventList() {
     clearDynamicListListeners('galleryList');

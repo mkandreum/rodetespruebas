@@ -1,7 +1,7 @@
 
-import { store } from '../store.js';
-import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading, closeModal } from '../ui.js';
-import { saveMerchSalesState } from '../api.js';
+import { store } from '/js/store.js';
+import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading, closeModal } from '/js/ui.js';
+import { saveMerchSalesState } from '/js/api.js';
 
 export function renderMerchPage() {
     console.log("Rendering Merch Page...");

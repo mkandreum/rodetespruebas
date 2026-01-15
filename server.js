@@ -46,6 +46,23 @@ app.use(cors()); // CORS support
 app.use(express.json({ limit: '50mb' })); // JSON body parser
 app.use(express.urlencoded({ extended: true, limit: '50mb' })); // URL-encoded body parser
 
+
+// ============================================
+// STATIC FILES - MUST BE BEFORE SESSION
+// ============================================
+
+// Serve static files (CSS, JS, images)
+app.use(express.static(__dirname));
+app.use('/uploads', express.static(UPLOAD_DIR));
+
+console.log('Static files configured:');
+console.log('  - Root:', __dirname);
+console.log('  - Uploads:', UPLOAD_DIR);
+
+// ============================================
+// SESSION & MIDDLEWARE
+// ============================================
+
 // Session management
 app.use(session({
     secret: SESSION_SECRET,
@@ -58,18 +75,11 @@ app.use(session({
     }
 }));
 
-
-// Static file serving - before API routes
-app.use('/js', express.static(path.join(__dirname, 'js')));
-app.use('/uploads', express.static(UPLOAD_DIR));
-app.use(express.static(__dirname, {
-    index: 'index.html',
-    extensions: ['html']
-}));
-
-// Log all requests for debugging
+// Request logging (after static files to avoid logging every asset)
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
+    if (!req.url.match(/\.(css|js|png|jpg|gif|ico|woff|woff2|ttf|svg)$/)) {
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    }
     next();
 });
 

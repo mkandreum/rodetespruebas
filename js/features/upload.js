@@ -1,7 +1,7 @@
 
-import { store } from '../store.js';
-import { showInfoModal, showLoading } from '../ui.js';
-import { UPLOAD_URL } from '../config.js';
+import { store } from '/js/store.js';
+import { showInfoModal, showLoading } from '/js/ui.js';
+import { UPLOAD_URL } from '/js/config.js';
 
 export async function handleFileUpload(file, targetInputId, isVideo = false) {
     if (!file) return;

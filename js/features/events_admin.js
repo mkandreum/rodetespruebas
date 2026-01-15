@@ -1,8 +1,8 @@
 
-import { store } from '../store.js';
-import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading, closeModal } from '../ui.js';
-import { saveAppState, saveTicketState } from '../api.js';
-import { renderPublicEvents } from './events.js';
+import { store } from '/js/store.js';
+import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading, closeModal } from '/js/ui.js';
+import { saveAppState, saveTicketState } from '/js/api.js';
+import { renderPublicEvents } from '/js/events.js';
 
 // ... (renderAdminEvents, handleSaveEvent, resetEventForm exports from previous step remain here - I will include them to ensure file integrity)
 

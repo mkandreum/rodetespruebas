@@ -1,7 +1,7 @@
 
-import { store } from './store.js';
-import { showInfoModal } from './ui.js';
-import { SAVE_APP_STATE_URL, SAVE_TICKETS_URL, SAVE_MERCH_SALES_URL } from './config.js';
+import { store } from '/js/store.js';
+import { showInfoModal } from '/js/ui.js';
+import { SAVE_APP_STATE_URL, SAVE_TICKETS_URL, SAVE_MERCH_SALES_URL } from '/js/config.js';
 
 export async function saveAppState() {
     try {

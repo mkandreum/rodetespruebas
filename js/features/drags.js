@@ -1,6 +1,6 @@
 
-import { store } from '../store.js';
-import { addTrackedListener, clearDynamicListListeners, showImageModal } from '../ui.js';
+import { store } from '/js/store.js';
+import { addTrackedListener, clearDynamicListListeners, showImageModal } from '/js/ui.js';
 
 export function renderDragList() {
     clearDynamicListListeners('dragList');

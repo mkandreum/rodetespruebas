@@ -1,10 +1,10 @@
 
-import { store } from '../store.js';
-import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading } from '../ui.js';
-import { saveAppState } from '../api.js';
-import { renderGalleryEventList, renderPastGalleries, renderGalleryImages } from './gallery.js';
-import { renderDragList } from './drags.js'; // If dragging updates drags
-import { renderMerchPage } from './merch.js'; // If updates merch images? rare
+import { store } from '/js/store.js';
+import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading } from '/js/ui.js';
+import { saveAppState } from '/js/api.js';
+import { renderGalleryEventList, renderPastGalleries, renderGalleryImages } from '/js/gallery.js';
+import { renderDragList } from '/js/drags.js'; // If dragging updates drags
+import { renderMerchPage } from '/js/merch.js'; // If updates merch images? rare
 
 /**
  * Reusable grid renderer for Admin Gallery Management (Events & Drags).

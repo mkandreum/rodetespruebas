@@ -1,9 +1,9 @@
 
-import { store } from '../store.js';
-import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading } from '../ui.js';
-import { saveAppState } from '../api.js';
-import { renderDragList } from './drags.js';
-import { renderAdminMerch } from './merch_admin.js';
+import { store } from '/js/store.js';
+import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading } from '/js/ui.js';
+import { saveAppState } from '/js/api.js';
+import { renderDragList } from '/js/drags.js';
+import { renderAdminMerch } from '/js/merch_admin.js';
 
 export function renderAdminDrags(drags) {
     const ul = document.getElementById('admin-drags-list-ul');

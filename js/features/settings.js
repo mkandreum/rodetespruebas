@@ -1,7 +1,7 @@
-import { store } from '../store.js';
-import { showInfoModal, showLoading } from '../ui.js';
-import { saveAppState } from '../api.js';
-import { renderNextEventPromo } from './home.js';
+import { store } from '/js/store.js';
+import { showInfoModal, showLoading } from '/js/ui.js';
+import { saveAppState } from '/js/api.js';
+import { renderNextEventPromo } from '/js/home.js';
 
 export function renderAppLogo() {
     const logo = document.getElementById('header-logo-img');

@@ -1,5 +1,5 @@
 
-import { showInfoModal } from './ui.js';
+import { showInfoModal } from '/js/ui.js';
 
 export const store = {
     appState: {},

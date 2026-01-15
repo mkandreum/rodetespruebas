@@ -1,9 +1,9 @@
 
-import { store } from '../store.js';
-import { showInfoModal, showLoading } from '../ui.js';
-import { saveAppState, saveMerchSalesState } from '../api.js';
-import { renderAdminEvents } from './events_admin.js';
-import { renderAdminMerchSalesSummary } from './merch_admin.js';
+import { store } from '/js/store.js';
+import { showInfoModal, showLoading } from '/js/ui.js';
+import { saveAppState, saveMerchSalesState } from '/js/api.js';
+import { renderAdminEvents } from '/js/events_admin.js';
+import { renderAdminMerchSalesSummary } from '/js/merch_admin.js';
 
 // Internal state for scanner
 let html5QrCodeScanner = null;

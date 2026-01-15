@@ -1,7 +1,7 @@
 
-import { store } from '../store.js';
-import { showInfoModal, closeModal, showLoading } from '../ui.js';
-import { saveTicketState, saveAppState } from '../api.js';
+import { store } from '/js/store.js';
+import { showInfoModal, closeModal, showLoading } from '/js/ui.js';
+import { saveTicketState, saveAppState } from '/js/api.js';
 
 export function openTicketModal(eventId) {
     const event = store.appState.events.find(e => e.id === parseInt(eventId));

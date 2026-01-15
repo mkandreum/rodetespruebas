@@ -1,5 +1,5 @@
 
-import { store } from '../store.js';
+import { store } from '/js/store.js';
 
 export function renderBannerVideo() {
     const homeBannerContainer = document.getElementById('home-banner-container');

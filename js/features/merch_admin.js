@@ -1,7 +1,7 @@
 
-import { store } from '../store.js';
-import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading } from '../ui.js';
-import { saveAppState } from '../api.js';
+import { store } from '/js/store.js';
+import { clearDynamicListListeners, addTrackedListener, showInfoModal, showLoading } from '/js/ui.js';
+import { saveAppState } from '/js/api.js';
 
 export function handleAdminMerchDragSelect(e) {
     const val = e.target.value;

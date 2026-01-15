@@ -1,20 +1,20 @@
 
-import { store } from './store.js';
-import { renderPublicEvents, renderHomeEvents } from './features/events.js';
-import { renderMerchPage } from './features/merch.js';
-import { renderGalleryEventList, renderPastGalleries } from './features/gallery.js';
-import { renderDragList } from './features/drags.js';
-import { renderBannerVideo, renderNextEventPromo } from './features/home.js';
-import { renderAppLogo } from './features/settings.js'; // Assuming settings.js handles logo
-import { checkAdminUI, loadContentToAdmin } from './features/admin.js';
+import { store } from '/js/store.js';
+import { renderPublicEvents, renderHomeEvents } from '/js/features/events.js';
+import { renderMerchPage } from '/js/features/merch.js';
+import { renderGalleryEventList, renderPastGalleries } from '/js/features/gallery.js';
+import { renderDragList } from '/js/features/drags.js';
+import { renderBannerVideo, renderNextEventPromo } from '/js/features/home.js';
+import { renderAppLogo } from '/js/features/settings.js'; // Assuming settings.js handles logo
+import { checkAdminUI, loadContentToAdmin } from '/js/features/admin.js';
 // Admin renders
-import { renderAdminEvents } from './features/events_admin.js';
-import { renderAdminDrags } from './features/drags_admin.js';
-import { renderAdminMerch } from './features/merch_admin.js';
-import { renderGiveawayEvents } from './features/giveaway.js';
-import { resetEventForm } from './features/events_admin.js';
-import { resetDragForm } from './features/drags_admin.js';
-import { resetMerchItemForm } from './features/merch_admin.js';
+import { renderAdminEvents } from '/js/features/events_admin.js';
+import { renderAdminDrags } from '/js/features/drags_admin.js';
+import { renderAdminMerch } from '/js/features/merch_admin.js';
+import { renderGiveawayEvents } from '/js/features/giveaway.js';
+import { resetEventForm } from '/js/features/events_admin.js';
+import { resetDragForm } from '/js/features/drags_admin.js';
+import { resetMerchItemForm } from '/js/features/merch_admin.js';
 
 
 export function showPage(pageId) {

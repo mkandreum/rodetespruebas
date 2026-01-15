@@ -1,9 +1,9 @@
 
-import { store } from '../store.js';
-import { LOGIN_URL, LOGOUT_URL } from '../config.js';
-import { showInfoModal, showLoading } from '../ui.js';
-import { showPage, showAdminPage } from '../router.js';
-import { stopScanner } from './scanner.js';
+import { store } from '/js/store.js';
+import { LOGIN_URL, LOGOUT_URL } from '/js/config.js';
+import { showInfoModal, showLoading } from '/js/ui.js';
+import { showPage, showAdminPage } from '/js/router.js';
+import { stopScanner } from '/js/scanner.js';
 
 let adminTapCounter = 0;
 
