@@ -58,12 +58,21 @@ app.use(session({
     }
 }));
 
-// Serve static files
+
+// Static file serving - before API routes
+app.use('/js', express.static(path.join(__dirname, 'js')));
+app.use('/uploads', express.static(UPLOAD_DIR));
 app.use(express.static(__dirname, {
     index: 'index.html',
     extensions: ['html']
 }));
-app.use('/uploads', express.static(UPLOAD_DIR));
+
+// Log all requests for debugging
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
+
 
 // ============================================
 // HELPER FUNCTIONS
@@ -171,7 +180,7 @@ app.post('/api/login', (req, res) => {
         if (email === ADMIN_EMAIL && hash === validPasswordHash) {
             req.session.isLoggedIn = true;
             req.session.adminEmail = email;
-            
+
             res.json({ success: true });
         } else {
             console.log('Login failed:', email !== ADMIN_EMAIL ? 'Email mismatch' : 'Password mismatch');
@@ -213,7 +222,7 @@ app.post('/api/logout', (req, res) => {
 app.post('/api/save', requireAuth, (req, res) => {
     try {
         const data = JSON.stringify(req.body);
-        
+
         // Validate JSON
         JSON.parse(data);
 
@@ -241,7 +250,7 @@ app.post('/api/save', requireAuth, (req, res) => {
 app.post('/api/save-tickets', (req, res) => {
     try {
         const data = JSON.stringify(req.body);
-        
+
         // Validate JSON
         JSON.parse(data);
 
@@ -269,7 +278,7 @@ app.post('/api/save-tickets', (req, res) => {
 app.post('/api/save-merch', (req, res) => {
     try {
         const data = JSON.stringify(req.body);
-        
+
         // Validate JSON
         JSON.parse(data);
 
@@ -331,7 +340,7 @@ app.post('/api/upload', requireAuth, upload.single('file'), (req, res) => {
         }
 
         const url = `uploads/${req.file.filename}`;
-        
+
         res.json({
             success: true,
             message: 'Archivo subido con éxito',
@@ -360,7 +369,7 @@ app.use((err, req, res, next) => {
             message: 'Error en la subida: ' + err.message
         });
     }
-    
+
     if (err) {
         console.error('Server error:', err);
         return res.status(500).json({
@@ -368,7 +377,7 @@ app.use((err, req, res, next) => {
             message: err.message || 'Error en el servidor'
         });
     }
-    
+
     next();
 });
 

@@ -3,12 +3,8 @@ import { store } from '../store.js';
 import { showInfoModal, showLoading } from '../ui.js';
 import { saveAppState, saveTicketState, saveMerchSalesState } from '../api.js';
 import { readFileAsText, readFileAsArrayBuffer } from '../utils.js';
-import {
-    renderAppLogo
-} from './settings.js';
-import {
-    renderNextEventPromo
-} from './home.js';
+import { renderAppLogo } from './settings.js';
+import { renderNextEventPromo } from './home.js';
 import { renderPublicEvents as rPE, renderHomeEvents as rHE } from './events.js';
 import { renderGalleryEventList as rGE, renderPastGalleries as rPG } from './gallery.js';
 import { renderDragList as rDL } from './drags.js';
