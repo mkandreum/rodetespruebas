@@ -1,8 +1,3 @@
-FROM php:8.2-apache
-
-# Instalar dependencias necesarias (ej. zip para backups)
-RUN apt-get update && apt-get install -y \
-    libzip-dev \
 FROM node:18-alpine
 
 # Set working directory
