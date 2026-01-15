@@ -28,13 +28,22 @@ export const store = {
     allEventListeners: []
 };
 
-// Initializes the store with data from window.PHP_*
-export function loadInitialData() {
+// Initializes the store with data from API
+export async function loadInitialData() {
     try {
+        console.log("Cargando datos desde API Node.js...");
+
+        const response = await fetch('/api/initial-data');
+        if (!response.ok) throw new Error("Error HTTP " + response.status);
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "Error cargando datos");
+
+        const { appState, tickets, merchSales, session } = result.data;
+
         // App State
-        if (window.PHP_INITIAL_STATE) {
-            store.appState = window.PHP_INITIAL_STATE;
-            console.log("App state cargado:", store.appState);
+        if (appState) {
+            store.appState = appState;
         } else {
             console.warn("No se encontró estado principal. Usando valores por defecto.");
             store.appState = {};
@@ -51,22 +60,14 @@ export function loadInitialData() {
         store.appState.nextMerchItemId = store.appState.nextMerchItemId || 1;
 
         // Tickets
-        if (window.PHP_INITIAL_TICKETS && Array.isArray(window.PHP_INITIAL_TICKETS)) {
-            store.allTickets = window.PHP_INITIAL_TICKETS;
-        } else {
-            store.allTickets = [];
-        }
+        store.allTickets = Array.isArray(tickets) ? tickets : [];
 
         // Merch Sales
-        if (window.PHP_INITIAL_MERCH_SALES && Array.isArray(window.PHP_INITIAL_MERCH_SALES)) {
-            store.allMerchSales = window.PHP_INITIAL_MERCH_SALES;
-        } else {
-            store.allMerchSales = [];
-        }
+        store.allMerchSales = Array.isArray(merchSales) ? merchSales : [];
 
-        // Login
-        store.isLoggedIn = window.PHP_IS_LOGGED_IN === true;
-        store.adminEmail = window.PHP_ADMIN_EMAIL || '';
+        // Login (from session)
+        store.isLoggedIn = session?.isLoggedIn === true;
+        store.adminEmail = session?.adminEmail || '';
 
         syncTicketCounters();
 

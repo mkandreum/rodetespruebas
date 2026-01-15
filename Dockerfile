@@ -3,32 +3,29 @@ FROM php:8.2-apache
 # Instalar dependencias necesarias (ej. zip para backups)
 RUN apt-get update && apt-get install -y \
     libzip-dev \
-    unzip \
-    && docker-php-ext-install zip
+FROM node:18-alpine
 
-# Habilitar mod_rewrite
-RUN a2enmod rewrite
-# Fix "Could not reliably determine the server's fully qualified domain name"
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+# Set working directory
+WORKDIR /app
 
-# Copiar el código fuente
-COPY . /var/www/html/
+# Copy package files
+COPY package*.json ./
 
-# Copiar configuración personalizada de PHP (Uploads limit)
-COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+# Install dependencies
+RUN npm ci --only=production
 
-# Copiar script de entrypoint y hacerlo ejecutable
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+# Copy application files
+COPY . .
 
-# Crear carpeta de datos privados y uploads (seguridad extra en build)
-RUN mkdir -p /var/www/data_private && \
-    mkdir -p /var/www/html/uploads && \
-    chown -R www-data:www-data /var/www/data_private && \
-    chown -R www-data:www-data /var/www/html/uploads && \
-    chown -R www-data:www-data /var/www/html
+# Create directories for data and uploads
+RUN mkdir -p /var/www/data_private /app/uploads && \
+    chown -R node:node /var/www/data_private /app/uploads
 
+# Switch to non-root user
+USER node
+
+# Expose port 80
 EXPOSE 80
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["docker-php-entrypoint", "apache2-foreground"]
+# Start the server
+CMD ["node", "server.js"]

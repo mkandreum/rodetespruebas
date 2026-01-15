@@ -7,8 +7,12 @@ services:
     expose:
       - "80"
     environment:
+      - PORT=80
       - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@rodetes.com}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - SESSION_SECRET=${SESSION_SECRET:-rodetes-secret-key-change-in-production}
+      - DATA_DIR=/var/www/data_private
+      - UPLOAD_DIR=/app/uploads
     volumes:
       - ./data_private:/var/www/data_private
-      - ./uploads:/var/www/html/uploads
+      - ./uploads:/app/uploads
