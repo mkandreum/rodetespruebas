@@ -1,12 +1,13 @@
-
 import { store } from '../store.js';
 import { showInfoModal, showLoading } from '../ui.js';
 import { saveAppState } from '../api.js';
-import { renderAppLogo as uiRenderAppLogo } from './settings.js'; // To refresh immediately
 import { renderNextEventPromo } from './home.js';
 
 export function renderAppLogo() {
-    uiRenderAppLogo(); // Bridge to the simple render function
+    const logo = document.getElementById('header-logo-img');
+    if (logo && store.appState) {
+        logo.src = store.appState.appLogoUrl || 'https://placehold.co/200x80/000/fff?text=RODETES&font=vt323';
+    }
 }
 
 export async function handleSaveContent(e) {

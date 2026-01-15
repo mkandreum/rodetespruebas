@@ -4,13 +4,11 @@ import { showInfoModal, showLoading } from '../ui.js';
 import { saveAppState, saveTicketState, saveMerchSalesState } from '../api.js';
 import { readFileAsText, readFileAsArrayBuffer } from '../utils.js';
 import {
-    renderAppLogo, renderNextEventPromo, renderPublicEvents, renderHomeEvents,
-    renderGalleryEventList, renderDragList, renderPastGalleries
-} from '../features/index.js'; // Helper index or direct imports. Since I can't easily create index.js now, I will assume direct calls or rely on main.js to refresh if I just reload? No, better do it right.
-// Circular dependencies might be an issue if I import everything here.
-// I'll assume page reload is NOT an option (SPA feel). I will import necessary renderers.
-// To avoid circular hell, I will list inputs.
-// Actually, I can import from specific files.
+    renderAppLogo
+} from './settings.js';
+import {
+    renderNextEventPromo
+} from './home.js';
 import { renderPublicEvents as rPE, renderHomeEvents as rHE } from './events.js';
 import { renderGalleryEventList as rGE, renderPastGalleries as rPG } from './gallery.js';
 import { renderDragList as rDL } from './drags.js';
