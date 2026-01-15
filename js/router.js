@@ -1,5 +1,5 @@
 
-import { store } from '../store.js';
+import { store } from './store.js';
 import { renderPublicEvents, renderHomeEvents } from './features/events.js';
 import { renderMerchPage } from './features/merch.js';
 import { renderGalleryEventList, renderPastGalleries } from './features/gallery.js';
