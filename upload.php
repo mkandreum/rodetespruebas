@@ -2,14 +2,22 @@
 // upload.php - Script para subir imágenes
 // Seguridad: Verificar sesión, tipos de archivo, etc.
 
-session_start();
+require_once __DIR__ . '/security_config.php';
 
-header('Content-Type: application/json');
+// 1. Verificar autenticación
+startSecureSession();
 
-// 1. Verificar autenticación (ajustar según tu sistema de login)
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Acceso denegado. No logueado.']);
+    exit;
+}
+
+// 1b. Validar CSRF
+$csrfToken = $_POST['csrf_token'] ?? '';
+if (!validateCSRFToken($csrfToken)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Token de seguridad inválido']);
     exit;
 }
 
@@ -132,38 +140,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fileTmpPath = $file['tmp_name'];
         $fileSize = $file['size'];
         $fileType = $file['type'];
+        $uploadType = $_POST['type'] ?? 'image';
 
-        // Validar tipo de archivo (solo imágenes)
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (!in_array($fileType, $allowedTypes)) {
+        // Validar tipo de archivo
+        $allowedImages = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $allowedVideos = ['video/mp4', 'video/webm'];
+        
+        $isAllowed = false;
+        if ($uploadType === 'video') {
+            $isAllowed = in_array($fileType, $allowedVideos);
+        } else {
+            $isAllowed = in_array($fileType, $allowedImages);
+        }
+
+        if (!$isAllowed) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Tipo de archivo no permitido. Solo JPG, PNG, GIF, WEBP.']);
+            echo json_encode(['success' => false, 'message' => "Tipo de archivo ($fileType) no permitido para tipo $uploadType."]);
             exit;
         }
 
-        // Validar tamaño (ej. max 5MB)
-        if ($fileSize > 5 * 1024 * 1024) {
+        // Validar tamaño (Max 10MB para video, 5MB para imagen)
+        $maxSize = ($uploadType === 'video') ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+        if ($fileSize > $maxSize) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'El archivo es demasiado grande (Max 5MB).']);
+            $maxSizeMB = $maxSize / (1024 * 1024);
+            echo json_encode(['success' => false, 'message' => "El archivo es demasiado grande (Max {$maxSizeMB}MB)."]);
             exit;
         }
 
-        // Generar nombre único para evitar colisiones
-        $newFileName = uniqid('img_', true) . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
+        // Generar nombre único para evitar colisiones (sin puntos extra para evitar problemas con algunos servidores/Apache)
+        $newFileName = 'img_' . bin2hex(random_bytes(8)) . '_' . uniqid() . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
         $destPath = $uploadDir . $newFileName;
 
         if (move_uploaded_file($fileTmpPath, $destPath)) {
-            // Generar miniatura (con PHP GD generando WebP)
-            $thumbResult = generateWebPThumbnail($destPath, $thumbnailDir);
-            $thumbnailPath = $thumbResult['path'];
-            $thumbnailError = $thumbResult['error'];
+            $thumbnailPath = null;
+            $thumbnailError = null;
+
+            // Solo generar miniatura si es imagen
+            if ($uploadType === 'image') {
+                $thumbResult = generateWebPThumbnail($destPath, $thumbnailDir);
+                $thumbnailPath = $thumbResult['path'];
+                $thumbnailError = $thumbResult['error'];
+            }
 
             // Éxito
             echo json_encode([
                 'success' => true,
                 'message' => 'Archivo subido correctamente.',
-                'url' => $destPath, // Ruta de imagen completa
-                'thumbnail' => $thumbnailPath, // Ruta de miniatura WebP (o null si falló)
+                'url' => $destPath, // Ruta de imagen/video completa
+                'thumbnail' => $thumbnailPath, // Ruta de miniatura WebP (o null si no aplica/falló)
                 'thumbnail_error' => $thumbnailError // Debug info
             ]);
         } else {

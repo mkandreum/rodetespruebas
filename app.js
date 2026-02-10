@@ -694,7 +694,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 				nextEventId: appState.nextEventId || 1, // Asegurar valor
 				nextDragId: appState.nextDragId || 1, // Asegurar valor
 				nextMerchItemId: appState.nextMerchItemId || 1, // Asegurar valor
-				scannedTickets: appState.scannedTickets || {} // Asegurar objeto
+				scannedTickets: appState.scannedTickets || {}, // Asegurar objeto
+				csrf_token: window.PHP_CSRF_TOKEN // NUEVO: Incluir token para validación en save.php
 			};
 
 			const response = await fetch(SAVE_APP_STATE_URL, {
@@ -743,7 +744,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 			const response = await fetch(SAVE_TICKETS_URL, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(allTickets || []) // Enviar array vacío si no hay tickets
+				body: JSON.stringify({
+					tickets: allTickets || [],
+					csrf_token: window.PHP_CSRF_TOKEN // NUEVO: Token para validación si el usuario es admin
+				})
 			});
 
 			// Intenta obtener el texto de la respuesta ANTES de parsear JSON si falla
@@ -795,7 +799,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 			const response = await fetch(SAVE_MERCH_SALES_URL, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(allMerchSales || []) // Enviar array vacío si no hay ventas
+				body: JSON.stringify({
+					sales: allMerchSales || [],
+					csrf_token: window.PHP_CSRF_TOKEN // NUEVO: Token para validación si el usuario es admin
+				})
 			});
 
 			const result = await response.json(); // Siempre intentar parsear
@@ -894,6 +901,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 			const formData = new FormData();
 			formData.append('file', file);
 			formData.append('type', type);
+			formData.append('csrf_token', window.PHP_CSRF_TOKEN); // NUEVO: CSRF para subida single
 
 			const xhr = new XMLHttpRequest();
 			xhr.open('POST', UPLOAD_URL, true);
@@ -4507,7 +4515,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 			const response = await fetch('save_smtp_config.php', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(config)
+				body: JSON.stringify({
+					...config,
+					csrf_token: window.PHP_CSRF_TOKEN // NUEVO: CSRF para SMTP
+				})
 			});
 			const result = await response.json();
 
@@ -4550,7 +4561,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 			const response = await fetch('test_smtp.php', { // Asumiendo que lo creamos
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email: username })
+				body: JSON.stringify({
+					email: username,
+					csrf_token: window.PHP_CSRF_TOKEN // NUEVO: CSRF para Test SMTP
+				})
 			});
 			// Nota: Debemos crear test_smtp.php
 
@@ -6111,6 +6125,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 			const formData = new FormData();
 			formData.append('file', file);
 			formData.append('type', 'image');
+			formData.append('csrf_token', window.PHP_CSRF_TOKEN); // NUEVO: CSRF para subida múltiple
 
 			uploadPromises.push(
 				fetch(UPLOAD_URL, { method: 'POST', body: formData })
@@ -6216,6 +6231,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 				const formData = new FormData();
 				formData.append('backup_file', file);
+				formData.append('csrf_token', window.PHP_CSRF_TOKEN); // NUEVO: CSRF para restauración
 
 				const response = await fetch('restore_backup.php', {
 					method: 'POST',
@@ -6362,6 +6378,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 				// ¡Login correcto! Actualizar estado y UI
 				isLoggedIn = true;
 				adminEmail = result.email || email; // Usar email devuelto por PHP si existe
+
+				// NUEVO: Actualizar token CSRF devuelto por PHP
+				if (result.csrf_token) {
+					window.PHP_CSRF_TOKEN = result.csrf_token;
+					console.log("CSRF Token actualizado tras login.");
+				}
+
 				checkAdminUI(); // Actualiza la UI para mostrar panel/ocultar login
 				showAdminPage('events'); // Ir a la pestaña de eventos por defecto
 				loginForm.reset();

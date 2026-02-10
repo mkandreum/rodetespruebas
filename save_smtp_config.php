@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/security_config.php';
+startSecureSession();
 header('Content-Type: application/json');
 
 // Solo admin puede guardar configuración SMTP
@@ -10,9 +11,21 @@ if (!$isAdmin) {
     exit;
 }
 
+$inputContents = file_get_contents('php://input');
+$config = json_decode($inputContents, true);
+
+// Validar CSRF
+$csrfToken = $config['csrf_token'] ?? '';
+if (!validateCSRFToken($csrfToken)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Token de seguridad inválido']);
+    exit;
+}
+
+// Limpiar token de config antes de seguir
+unset($config['csrf_token']);
+
 $dataFile = '/var/www/data_private/smtp_config.json';
-$input = file_get_contents('php://input');
-$config = json_decode($input, true);
 
 if ($config === null) {
     http_response_code(400);

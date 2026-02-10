@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/security_config.php';
+startSecureSession();
 header('Content-Type: application/json');
 
 // Solo admin puede probar SMTP
@@ -10,9 +11,15 @@ if (!$isAdmin) {
     exit;
 }
 
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
-$testEmail = $data['email'] ?? '';
+$input = json_decode(file_get_contents('php://input'), true);
+$csrfToken = $input['csrf_token'] ?? '';
+if (!validateCSRFToken($csrfToken)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Token de seguridad inválido']);
+    exit;
+}
+
+$testEmail = $input['email'] ?? '';
 
 if (empty($testEmail)) {
     echo json_encode(['success' => false, 'message' => 'Email de destino requerido']);

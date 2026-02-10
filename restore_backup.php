@@ -4,14 +4,20 @@ ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
+require_once __DIR__ . '/security_config.php';
+startSecureSession();
 header('Content-Type: application/json');
-
-session_start();
 
 try {
     // --- Seguridad: Solo admin ---
     if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
         throw new Exception('Acceso denegado', 403);
+    }
+
+    // Validar CSRF
+    $csrfToken = $_POST['csrf_token'] ?? '';
+    if (!validateCSRFToken($csrfToken)) {
+        throw new Exception('Token de seguridad inválido', 403);
     }
 
     if (!isset($_FILES['backup_file'])) {
