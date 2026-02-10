@@ -8,13 +8,32 @@ $isAdmin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === tru
 $dataFile = '/var/www/data_private/merch_vendido.json';
 $input = file_get_contents('php://input');
 
-$newSales = json_decode($input, true);
-if ($newSales === null) {
+$data = json_decode($input, true);
+if ($data === null) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'JSON inválido']);
     exit;
 }
 
+// Validate CSRF token for admin users
+if ($isAdmin) {
+    $csrfToken = $data['csrf_token'] ?? '';
+    if (!validateCSRFToken($csrfToken)) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Token de seguridad inválido']);
+        exit;
+    }
+}
+
+// Extract sales from data structure
+// Backward compatibility: The 'sales' key will exist in the new format (sent by app.js).
+// Fallback to $data handles legacy code or direct API calls that might send sales array directly.
+$newSales = $data['sales'] ?? $data;
+if (!is_array($newSales)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Formato de datos inválido']);
+    exit;
+}
 // --- Protección ---
 // --- Protección y Detección de Cambios ---
 $currentSalesJson = file_exists($dataFile) ? file_get_contents($dataFile) : '[]';

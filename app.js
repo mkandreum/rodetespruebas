@@ -664,6 +664,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 	 */
 	async function saveAppState() {
 		try {
+			// Check CSRF token is available (required for admin operations)
+			if (!window.PHP_CSRF_TOKEN || window.PHP_CSRF_TOKEN === '') {
+				console.error('CSRF token not available');
+				showInfoModal("Error de seguridad: token de sesión no disponible. Por favor, recarga la página.", true);
+				return;
+			}
 			// Prepara los datos a guardar
 			const stateToSave = {
 				appLogoUrl: appState.appLogoUrl,
@@ -6754,16 +6760,18 @@ window.addEventListener('DOMContentLoaded', async () => {
 				msg = `ERROR: EVENTO ARCHIVADO.<br>(${event.name || '?'})`;
 			}
 			else {
-				// --- ÉXITO TICKET VÁLIDO ---
-				isError = false;
 				requiresConfirmation = true;
 				currentScannedTicketInfo = { qrData, ticketEntry, event, available };
 
 				// Configurar modal de confirmación
 				scannerQuantityInput.value = 1; // Default 1
 				scannerQuantityInput.max = available; // Máximo disponibles
-				scannerQuantityInput.min = 1; // Mínimo 1
-				scannerQuantityInput.disabled = false; // Editable
+				// Check CSRF token is available (required for admin operations)
+				if (!window.PHP_CSRF_TOKEN || window.PHP_CSRF_TOKEN === '') {
+					console.error('CSRF token not available');
+					showInfoModal("Error de seguridad: token de sesión no disponible. Por favor, recarga la página.", true);
+					return;
+				}
 
 				scannerInputMessage.innerHTML = `
 						<span class="text-3xl text-green-400">¡ENTRADA VÁLIDA!</span>
