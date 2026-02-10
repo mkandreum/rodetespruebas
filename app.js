@@ -664,17 +664,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 	 */
 	async function saveAppState() {
 		try {
-			// Check CSRF token is available (required for admin operations)
-			// Note: Empty string is falsy, so this catches both undefined and ""
-			if (!window.PHP_CSRF_TOKEN) {
-				console.error('CSRF token not available');
-				showInfoModal("Error de seguridad: token de sesión no disponible. Por favor, recarga la página.", true);
-				return;
-			}
-
 			// Prepara los datos a guardar
 			const stateToSave = {
-				csrf_token: window.PHP_CSRF_TOKEN,
 				appLogoUrl: appState.appLogoUrl,
 				ticketLogoUrl: appState.ticketLogoUrl,
 				bannerVideoUrl: appState.bannerVideoUrl,
@@ -743,18 +734,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 	 */
 	async function saveTicketState() {
 		try {
-			// Note: window.PHP_CSRF_TOKEN is set by index.php (line 62):
-			// - Valid token string for logged-in admin users (required for CSRF validation)
-			// - Explicitly set to empty string "" for non-logged-in users by PHP
-			// The || '' fallback handles unlikely edge cases (script load order issues)
-			const dataToSave = {
-				csrf_token: window.PHP_CSRF_TOKEN || '',
-				tickets: allTickets || []
-			};
 			const response = await fetch(SAVE_TICKETS_URL, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(dataToSave)
+				body: JSON.stringify(allTickets || []) // Enviar array vacío si no hay tickets
 			});
 
 			// Intenta obtener el texto de la respuesta ANTES de parsear JSON si falla
@@ -803,18 +786,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 	 */
 	async function saveMerchSalesState() {
 		try {
-			// Note: window.PHP_CSRF_TOKEN is set by index.php (line 62):
-			// - Valid token string for logged-in admin users (required for CSRF validation)
-			// - Explicitly set to empty string "" for non-logged-in users by PHP
-			// The || '' fallback handles unlikely edge cases (script load order issues)
-			const dataToSave = {
-				csrf_token: window.PHP_CSRF_TOKEN || '',
-				sales: allMerchSales || []
-			};
 			const response = await fetch(SAVE_MERCH_SALES_URL, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(dataToSave)
+				body: JSON.stringify(allMerchSales || []) // Enviar array vacío si no hay ventas
 			});
 
 			const result = await response.json(); // Siempre intentar parsear
