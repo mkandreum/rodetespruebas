@@ -6,6 +6,8 @@
  * Uso: php update_json_thumbnails_to_webp.php
  */
 
+require_once __DIR__ . '/security_config.php';
+
 // Verificar que se ejecuta desde CLI
 if (php_sapi_name() !== 'cli') {
     die("Este script solo puede ejecutarse desde línea de comandos\n");
@@ -14,7 +16,7 @@ if (php_sapi_name() !== 'cli') {
 echo "📝 Actualizador de Referencias de Miniaturas\n";
 echo "===========================================\n\n";
 
-$dataFile = '/var/www/data_private/datos_app.json';
+$dataFile = getDataFile('datos_app.json');
 
 if (!file_exists($dataFile)) {
     die("❌ Error: Archivo no encontrado: $dataFile\n");

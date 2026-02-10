@@ -5,10 +5,12 @@
  * Fallback: copia optimizada con JPEG
  */
 
+require_once __DIR__ . '/security_config.php';
+
 // Rutas
 $uploadsDir = __DIR__ . '/uploads/';
 $thumbnailsDir = $uploadsDir . 'thumbnails/';
-$dataFile = '/var/www/data_private/datos_app.json';
+$dataFile = getDataFile('datos_app.json');
 
 // Crear directorio de miniaturas si no existe
 if (!file_exists($thumbnailsDir)) {

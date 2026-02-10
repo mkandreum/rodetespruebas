@@ -16,7 +16,7 @@ $ticketId = $data['ticketId'];
 $email = $data['email'];
 
 // Cargar estado de entradas
-$dataFile = '/var/www/data_private/entradas_db.json';
+$dataFile = getDataFile('entradas_db.json');
 if (!file_exists($dataFile)) {
     http_response_code(404);
     echo json_encode(['success' => false, 'message' => 'No hay base de datos de entradas']);
@@ -41,7 +41,7 @@ if (!$ticket) {
 }
 
 // Cargar info del evento
-$appStateFile = '/var/www/data_private/datos_app.json';
+$appStateFile = getDataFile('datos_app.json');
 $appState = json_decode(file_get_contents($appStateFile), true);
 $events = $appState['events'] ?? [];
 $logoUrl = $appState['appLogoUrl'] ?? ''; // Obtener logo

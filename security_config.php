@@ -81,6 +81,44 @@ function getCSRFToken() {
 }
 
 /**
+ * Devuelve el directorio de datos privado.
+ * - Permite sobreescribir con la variable de entorno DATA_DIR.
+ * - Usa /var/www/data_private/ por defecto (Docker).
+ * - Hace fallback a /path/del/proyecto/data_private/ si el anterior no existe.
+ */
+function getDataDir() {
+    $envDir = getenv('DATA_DIR');
+    if (!empty($envDir)) {
+        $normalized = rtrim($envDir, "/\\") . DIRECTORY_SEPARATOR;
+        if (!is_dir($normalized)) {
+            mkdir($normalized, 0750, true);
+        }
+        return $normalized;
+    }
+
+    $defaultDir = '/var/www/data_private/';
+    if (!is_dir($defaultDir)) {
+        @mkdir($defaultDir, 0750, true);
+    }
+    if (is_dir($defaultDir) || is_writable(dirname($defaultDir))) {
+        return rtrim($defaultDir, "/\\") . DIRECTORY_SEPARATOR;
+    }
+
+    $fallbackDir = __DIR__ . '/data_private/';
+    if (!is_dir($fallbackDir)) {
+        mkdir($fallbackDir, 0750, true);
+    }
+    return rtrim($fallbackDir, "/\\") . DIRECTORY_SEPARATOR;
+}
+
+/**
+ * Construye la ruta completa a un archivo de datos privado.
+ */
+function getDataFile($fileName) {
+    return getDataDir() . ltrim($fileName, "/\\");
+}
+
+/**
  * Security headers to prevent common attacks
  */
 function setSecurityHeaders() {

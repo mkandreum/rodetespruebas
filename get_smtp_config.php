@@ -10,7 +10,7 @@ if (!$isAdmin) {
     exit;
 }
 
-$dataFile = '/var/www/data_private/smtp_config.json';
+$dataFile = getDataFile('smtp_config.json');
 
 if (!file_exists($dataFile)) {
     echo json_encode(['success' => true, 'config' => null]);

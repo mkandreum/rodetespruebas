@@ -7,8 +7,10 @@
 echo "🔍 Diagnóstico de Miniaturas\n";
 echo "============================\n\n";
 
+require_once __DIR__ . '/security_config.php';
+
 // 1. Verificar datos_app.json
-$dataFile = '/var/www/data_private/datos_app.json';
+$dataFile = getDataFile('datos_app.json');
 if (!file_exists($dataFile)) {
     die("❌ datos_app.json no encontrado\n");
 }
