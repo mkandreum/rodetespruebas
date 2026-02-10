@@ -24,7 +24,7 @@ if (empty($winnerName) || empty($winnerEmail)) {
 }
 
 // Cargar estado de la app para obtener logo
-$appStateFile = getDataFile('datos_app.json');
+$appStateFile = '/var/www/data_private/datos_app.json';
 $appLogoUrl = '';
 if (file_exists($appStateFile)) {
     $appState = json_decode(file_get_contents($appStateFile), true);

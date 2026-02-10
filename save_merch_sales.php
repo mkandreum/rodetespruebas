@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 // --- Seguridad: Determinar si el usuario es admin ---
 $isAdmin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
 
-$dataFile = getDataFile('merch_vendido.json');
+$dataFile = '/var/www/data_private/merch_vendido.json';
 $input = file_get_contents('php://input');
 
 $data = json_decode($input, true);
@@ -73,7 +73,7 @@ if (file_put_contents($dataFile, json_encode($newSales, JSON_PRETTY_PRINT)) !== 
         require_once __DIR__ . '/send_email.php';
 
         // Cargar app state para obtener información de merch y drags
-        $appStateFile = getDataFile('datos_app.json');
+        $appStateFile = '/var/www/data_private/datos_app.json';
         if (file_exists($appStateFile)) {
             $appStateJson = file_get_contents($appStateFile);
             $appState = json_decode($appStateJson, true);

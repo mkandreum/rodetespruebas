@@ -1,6 +1,5 @@
 <?php
 // Función para enviar emails usando PHPMailer
-require_once __DIR__ . '/security_config.php';
 require_once __DIR__ . '/PHPMailer/PHPMailer.php';
 require_once __DIR__ . '/PHPMailer/SMTP.php';
 require_once __DIR__ . '/PHPMailer/Exception.php';
@@ -11,7 +10,7 @@ use PHPMailer\PHPMailer\Exception;
 function sendEmail($to, $subject, $body, $attachments = [])
 {
     // Cargar configuración SMTP
-    $smtpConfigFile = getDataFile('smtp_config.json');
+    $smtpConfigFile = '/var/www/data_private/smtp_config.json';
 
     if (!file_exists($smtpConfigFile)) {
         error_log('SMTP config file not found');

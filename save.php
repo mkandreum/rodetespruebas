@@ -20,7 +20,7 @@ if (!validateCSRFToken($csrfToken)) {
     exit;
 }
 
-$dataFile = getDataFile('datos_app.json');
+$dataFile = '/var/www/data_private/datos_app.json';
 $inputData = file_get_contents('php://input');
 $decoded = json_decode($inputData, true);
 

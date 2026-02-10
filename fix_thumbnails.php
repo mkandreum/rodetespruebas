@@ -3,10 +3,8 @@
 // Combinación de lógica de conversión y actualización de base de datos.
 header('Content-Type: text/plain; charset=utf-8');
 
-require_once __DIR__ . '/security_config.php';
-
 // Seguridad básica: Solo permitir si está logueado (sesión iniciada)
-startSecureSession();
+session_start();
 if (empty($_SESSION['is_logged_in'])) {
     http_response_code(403);
     die("❌ Acceso denegado. Debes estar logueado como administrador.");
@@ -17,7 +15,7 @@ echo "==========================================\n\n";
 
 $uploadsDir = __DIR__ . '/uploads/';
 $thumbnailsDir = $uploadsDir . 'thumbnails/';
-$dataFile = getDataFile('datos_app.json');
+$dataFile = '/var/www/data_private/datos_app.json';
 
 // --- FASE 1: Conversión de archivos en disco ---
 echo "1️⃣ FASE 1: Convirtiendo archivos en disco...\n";

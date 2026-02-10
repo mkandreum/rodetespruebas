@@ -27,7 +27,7 @@ if (isset($_SESSION['is_logged_in']) && !validateCSRFToken($csrfToken)) {
 }
 
 // Rate limiting: Simple IP-based attempt tracking
-$loginAttemptsFile = getDataFile('login_attempts.json');
+$loginAttemptsFile = '/var/www/data_private/login_attempts.json';
 $clientIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 $maxAttempts = 5;
 $lockoutTime = 900; // 15 minutes

@@ -5,8 +5,8 @@ ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
 header('Content-Type: application/json');
-require_once __DIR__ . '/security_config.php';
-startSecureSession();
+
+session_start();
 
 try {
     // --- Seguridad: Solo admin ---
@@ -66,7 +66,7 @@ try {
 
     $filesProcessed = [];
     $errors = [];
-    $dataDir = getDataDir();
+    $dataDir = '/var/www/data_private/';
 
     // Asegurar directorio data_private
     if (!is_dir($dataDir)) {

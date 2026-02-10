@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/security_config.php';
-startSecureSession();
+session_start();
 
 // --- Seguridad: Solo admin ---
 // Ajusta esto según tu lógica de sesión real.
@@ -20,7 +19,7 @@ if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
 }
 
 // 1. Añadir archivos JSON de datos privados
-$dataDir = getDataDir();
+$dataDir = '/var/www/data_private/';
 if (is_dir($dataDir)) {
     $files = glob($dataDir . '*.json');
     foreach ($files as $file) {

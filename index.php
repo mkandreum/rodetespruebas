@@ -17,7 +17,7 @@ header("Pragma: no-cache");
 // --- Seguridad: Evitar acceso directo a PHP ---
 // Se asume que la autenticación/sesión se maneja en login.php, logout.php, save.php, etc.
 
-$dataFileDir = getDataDir();
+$dataFileDir = '/var/www/data_private/'; // Ajusta esta ruta si es necesario
 
 // Definiciones de archivos
 $appStateFile = $dataFileDir . 'datos_app.json';
