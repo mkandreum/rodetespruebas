@@ -1,7 +1,16 @@
 <?php
 // send_winner_notification.php
+require_once __DIR__ . '/security_config.php';
+startSecureSession();
 header('Content-Type: application/json');
 require_once __DIR__ . '/send_email.php';
+
+// Solo admin puede notificar ganadores
+if (empty($_SESSION['is_logged_in'])) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'No autorizado']);
+    exit;
+}
 
 // Verificar método
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

@@ -1,10 +1,10 @@
 <?php
-session_start();
+require_once __DIR__ . '/security_config.php';
+startSecureSession();
 header('Content-Type: application/json');
 
 // Solo admin puede obtener configuración SMTP
-$isAdmin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
-if (!$isAdmin) {
+if (empty($_SESSION['is_logged_in'])) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'No autorizado']);
     exit;

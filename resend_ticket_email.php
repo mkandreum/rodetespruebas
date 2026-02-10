@@ -1,7 +1,15 @@
 <?php
+require_once __DIR__ . '/security_config.php';
+startSecureSession();
+header('Content-Type: application/json');
 require_once __DIR__ . '/send_email.php';
 
-header('Content-Type: application/json');
+// Solo admin puede reenviar emails
+if (empty($_SESSION['is_logged_in'])) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'No autorizado']);
+    exit;
+}
 
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);

@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/security_config.php';
+startSecureSession();
 header('Content-Type: application/json');
 
 // --- Seguridad: Determinar si el usuario es admin ---
