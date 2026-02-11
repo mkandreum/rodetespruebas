@@ -365,7 +365,21 @@ function renderBannerVideo() {
 
 	const isImageUrl = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url) || url.startsWith('uploads/') || url.startsWith('data:image');
 	const isVideoUrl = /\.(mp4|webm|ogv)$/i.test(url) || (url.startsWith('uploads/') && !isImageUrl) || url.startsWith('data:video');
-	const isEmbedUrl = url.includes('/embed/') || url.includes('youtube.com/watch') || url.includes('youtu.be') || url.includes('vimeo.com');
+	
+	// Validate embed URLs more securely by checking the hostname
+	let isEmbedUrl = false;
+	if (url.includes('/embed/') || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')) {
+		try {
+			const urlObj = new URL(url);
+			const hostname = urlObj.hostname.toLowerCase();
+			isEmbedUrl = hostname.includes('youtube.com') || 
+			             hostname.includes('youtu.be') || 
+			             hostname.includes('vimeo.com') ||
+			             hostname.includes('youtube-nocookie.com');
+		} catch (e) {
+			isEmbedUrl = false;
+		}
+	}
 
 	let element;
 	let fallbackDiv;
