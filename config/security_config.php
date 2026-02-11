@@ -4,29 +4,26 @@
  * Include this file at the beginning of every PHP file that uses sessions
  */
 
-// Configure secure session settings
-if (session_status() === PHP_SESSION_NONE) {
-    // Session cookie security
-    ini_set('session.cookie_httponly', '1'); // Prevent JavaScript access to session cookie
-    ini_set('session.cookie_samesite', 'Strict'); // CSRF protection
-    ini_set('session.use_strict_mode', '1'); // Reject uninitialized session IDs
-    ini_set('session.use_only_cookies', '1'); // Don't accept session IDs in URLs
-    
-    // Enable secure cookies if HTTPS is available
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', '1');
-    }
-    
-    // Session timeout (30 minutes of inactivity)
-    ini_set('session.gc_maxlifetime', '1800');
-    ini_set('session.cookie_lifetime', '0'); // Session cookie (expires when browser closes)
-}
-
 /**
  * Start session and check for timeout
  */
 function startSecureSession() {
     if (session_status() === PHP_SESSION_NONE) {
+        // Configure secure session settings BEFORE starting session
+        ini_set('session.cookie_httponly', '1'); // Prevent JavaScript access to session cookie
+        ini_set('session.cookie_samesite', 'Strict'); // CSRF protection
+        ini_set('session.use_strict_mode', '1'); // Reject uninitialized session IDs
+        ini_set('session.use_only_cookies', '1'); // Don't accept session IDs in URLs
+        
+        // Enable secure cookies if HTTPS is available
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+            ini_set('session.cookie_secure', '1');
+        }
+        
+        // Session timeout (30 minutes of inactivity)
+        ini_set('session.gc_maxlifetime', '1800');
+        ini_set('session.cookie_lifetime', '0'); // Session cookie (expires when browser closes)
+        
         session_start();
         
         // Check for session timeout
