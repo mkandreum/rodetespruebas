@@ -13,6 +13,16 @@ const dragListContainer = document.getElementById('drag-list-container');
 const dragGalleryViewContainer = document.getElementById('drag-gallery-view-container');
 
 /**
+ * Maneja el clic en un enlace de galería.
+ */
+function handleGalleryLink(e) {
+	const eventId = parseInt(e.currentTarget.dataset.eventId, 10);
+	if (isNaN(eventId)) return;
+	renderGalleryImages(eventId);
+	if (typeof showPage === 'function') showPage('gallery');
+}
+
+/**
  * Renderiza la lista de eventos con galerías en la página de Galería.
  */
 function renderGalleryEventList() {
