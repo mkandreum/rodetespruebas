@@ -317,4 +317,196 @@ function handleAdminMenuTap() {
 	}
 }
 
+/**
+ * Renderiza el resumen de ventas para la drag seleccionada en admin merch.
+ * Extraído de app-old-broken.js líneas 3304-3332
+ */
+function renderAdminMerchSalesSummary() {
+	const adminMerchSalesSummary = document.getElementById('adminMerchSalesSummary');
+	const adminMerchTotalItems = document.getElementById('adminMerchTotalItems');
+	const adminMerchTotalRevenue = document.getElementById('adminMerchTotalRevenue');
+	const adminMerchViewSalesBtn = document.getElementById('adminMerchViewSalesBtn');
+	
+	if (!adminMerchSalesSummary || !adminMerchTotalItems || !adminMerchTotalRevenue || !adminMerchViewSalesBtn || currentAdminMerchDragId === null) return;
+
+	adminMerchSalesSummary.classList.remove('hidden'); // Asegurar visibilidad
+
+	const salesForDrag = (allMerchSales || []).filter(s => s.dragId === currentAdminMerchDragId);
+	const deliveredSales = salesForDrag.filter(s => s.status === 'Delivered');
+	const pendingSalesCount = salesForDrag.length - deliveredSales.length;
+
+	let totalItemsDelivered = 0;
+	let totalRevenueDelivered = 0;
+
+	deliveredSales.forEach(sale => {
+		totalItemsDelivered += sale.quantity || 0;
+		totalRevenueDelivered += (sale.quantity || 0) * (sale.itemPrice || 0);
+	});
+
+	adminMerchTotalItems.textContent = totalItemsDelivered.toString();
+	adminMerchTotalRevenue.textContent = totalRevenueDelivered.toFixed(2) + ' €';
+
+	// Actualizar botón "Ver Lista"
+	if (salesForDrag.length > 0) {
+		adminMerchViewSalesBtn.textContent = `VER LISTA PEDIDOS (${pendingSalesCount} PENDIENTES)`;
+		adminMerchViewSalesBtn.disabled = false;
+	} else {
+		adminMerchViewSalesBtn.textContent = `NO HAY PEDIDOS REGISTRADOS`;
+		adminMerchViewSalesBtn.disabled = true;
+	}
+}
+
+/**
+ * Muestra el modal con la lista completa de pedidos de merch para la drag actual.
+ * Extraído de app-old-broken.js líneas 3337-3349
+ */
+function handleViewMerchSales() {
+	const merchSalesListModal = document.getElementById('merchSalesListModal');
+	const merchSalesListTitle = document.getElementById('merchSalesListTitle');
+	const merchSalesListContent = document.getElementById('merchSalesListContent');
+	
+	if (!merchSalesListModal || !merchSalesListTitle || !merchSalesListContent || currentAdminMerchDragId === null || !appState || !appState.drags) return;
+
+	const drag = appState.drags.find(d => d.id === currentAdminMerchDragId);
+	if (!drag) {
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error: Drag no encontrada.", true);
+		}
+		return;
+	}
+
+	merchSalesListTitle.textContent = `Pedidos de Merch: ${drag.name || 'Drag'}`;
+	renderMerchSalesList();
+	merchSalesListModal.classList.remove('hidden');
+}
+
+/**
+ * Renderiza la lista de todos los pedidos en el modal.
+ * Extraído de app-old-broken.js líneas 3355-3412
+ */
+function renderMerchSalesList() {
+	const merchSalesListContent = document.getElementById('merchSalesListContent');
+	if (!merchSalesListContent || currentAdminMerchDragId === null) return;
+
+	if (typeof clearDynamicListListeners === 'function') {
+		clearDynamicListListeners('merchSalesList');
+	}
+	merchSalesListContent.innerHTML = '';
+
+	const salesForDrag = (allMerchSales || [])
+		.filter(s => s.dragId === currentAdminMerchDragId)
+		.sort((a, b) => (b.saleDate && a.saleDate) ? new Date(b.saleDate) - new Date(a.saleDate) : 0);
+
+	if (salesForDrag.length === 0) {
+		merchSalesListContent.innerHTML = '<p class="text-gray-400 text-center font-pixel">NO HAY PEDIDOS DE MERCH REGISTRADOS PARA ESTA DRAG.</p>';
+		return;
+	}
+
+	let listHtml = `<ul class="text-left space-y-4">`;
+	salesForDrag.forEach(sale => {
+		try {
+			const isPending = sale.status === 'Pending';
+			const statusText = isPending ? 'PENDIENTE' : 'ENTREGADO';
+			const statusColor = isPending ? 'text-yellow-400' : 'text-green-400';
+			const totalAmount = ((sale.itemPrice || 0) * (sale.quantity || 0)).toFixed(2);
+			const saleDateStr = sale.saleDate ? new Date(sale.saleDate).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : 'Fecha N/A';
+			const saleIdShort = (sale.saleId || 'N/A').substring(0, 8);
+			const buyerName = `${sale.nombre || ''} ${sale.apellidos || ''}`.trim() || 'Nombre N/A';
+
+			const buttonHtml = isPending
+				? `<button data-sale-id="${sale.saleId}" class="mark-delivered-btn bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded-none text-sm font-pixel">MARCAR ENTREGADO</button>`
+				: `<span class="text-gray-500 px-3 py-1 text-sm font-pixel">CONFIRMADO</span>`;
+
+			listHtml += `
+					<li class="p-3 bg-gray-800 border border-gray-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+						<div class="min-w-0 flex-grow">
+							<span class="font-pixel text-lg text-white block truncate" title="${sale.itemName || ''}">${sale.itemName || 'Artículo'} x ${sale.quantity || '?'}</span>
+							<span class="text-sm ${statusColor} font-bold block">${statusText} (${totalAmount} €)</span>
+							<span class="text-xs text-gray-400 block break-words" title="${buyerName}">${buyerName}</span>
+							<span class="text-xs text-gray-500 block break-all" title="${sale.email || ''}">Email: ${sale.email || 'N/A'}</span>
+							<span class="text-xs text-gray-500 block">ID: ${saleIdShort}... (${saleDateStr})</span>
+						</div>
+						<div class="flex-shrink-0 mt-2 sm:mt-0">
+							${buttonHtml}
+						</div>
+					</li>
+				`;
+		} catch (e) {
+			console.error(`Error renderizando venta ${sale?.saleId}:`, e);
+		}
+	});
+	listHtml += '</ul>';
+	merchSalesListContent.innerHTML = listHtml;
+
+	if (typeof addTrackedListener === 'function') {
+		merchSalesListContent.querySelectorAll('.mark-delivered-btn').forEach(btn => {
+			addTrackedListener(btn, 'click', handleMarkMerchDelivered);
+		});
+	}
+}
+
+/**
+ * Marca un pedido de merch como entregado.
+ * Extraído de app-old-broken.js líneas 3417-3453
+ */
+async function handleMarkMerchDelivered(e) {
+	const saleId = e.currentTarget.dataset.saleId;
+	if (!saleId || !allMerchSales) return;
+
+	const saleIndex = allMerchSales.findIndex(s => s.saleId === saleId);
+	if (saleIndex === -1) {
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error: Pedido no encontrado.", true);
+		}
+		return;
+	}
+	if (allMerchSales[saleIndex].status === 'Delivered') {
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Este pedido ya está marcado como entregado.", false);
+		}
+		return;
+	}
+
+	console.warn(`Simulando confirmación de entrega para pedido: ${saleId}`);
+	if (typeof showLoading === 'function') showLoading(true);
+	try {
+		allMerchSales[saleIndex].status = 'Delivered';
+		if (typeof saveMerchSalesState === 'function') {
+			await saveMerchSalesState();
+		}
+
+		renderMerchSalesList();
+		renderAdminMerchSalesSummary();
+
+		const saleIdShort = (saleId || 'N/A').substring(0, 8);
+		if (typeof showInfoModal === 'function') {
+			showInfoModal(`¡PEDIDO ${saleIdShort} CONFIRMADO COMO ENTREGADO!`, false);
+		}
+
+	} catch (error) {
+		console.error("Error marking merch delivered:", error);
+		allMerchSales[saleIndex].status = 'Pending';
+		renderMerchSalesList();
+		renderAdminMerchSalesSummary();
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error al confirmar la entrega: " + error.message, true);
+		}
+	} finally {
+		if (typeof showLoading === 'function') showLoading(false);
+	}
+}
+
+/**
+ * Maneja el cambio en el select de drag en admin merch.
+ * Extraído de app-old-broken.js líneas 3462-3466
+ */
+function handleAdminMerchDragSelect() {
+	const adminMerchSelectDrag = document.getElementById('adminMerchSelectDrag');
+	if (!adminMerchSelectDrag) return;
+	currentAdminMerchDragId = adminMerchSelectDrag.value ? parseInt(adminMerchSelectDrag.value) : null;
+	if (typeof renderAdminMerch === 'function') {
+		renderAdminMerch();
+	}
+}
+
 
