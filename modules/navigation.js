@@ -6,105 +6,104 @@
 /**
  * Cambia a una página específica.
  */
-function showPage(pageName) {
-	const validPages = ['home', 'events', 'drags', 'galleries', 'merch', 'scanner', 'tickets', 'login', 'info'];
-
-	if (!validPages.includes(pageName)) {
-		console.warn(`Página no válida: ${pageName}`);
-		return;
-	}
-
+function showPage(pageId) {
 	// Ocultar todas las páginas
-	document.querySelectorAll('[id*="Page"]').forEach(page => {
+	document.querySelectorAll('[data-page]').forEach(page => {
 		page.classList.add('hidden');
+		page.classList.remove('page-fade-in');
 	});
 
-	// Actualizar indicadores de navegación
-	updateNavIndicator(pageName);
-
-	// Mostrar la página solicitada
-	const pageMap = {
-		'home': 'homePage',
-		'events': 'eventsPage',
-		'drags': 'dragsPage',
-		'galleries': 'galleriesPage',
-		'merch': 'merchPage',
-		'scanner': 'scannerPage',
-		'tickets': 'ticketsPage',
-		'login': 'loginPage',
-		'info': 'infoPage'
-	};
-
-	const pageId = pageMap[pageName];
-
-	if (pageId) {
-		const pageElement = document.getElementById(pageId);
-		if (pageElement) {
-			pageElement.classList.remove('hidden');
-
-			// Ejecutar init específicos por página
-			switch (pageName) {
-				case 'home':
-					if (typeof renderPastGalleries === 'function') renderPastGalleries(appState.events || []);
-					if (typeof renderHomeEvents === 'function') renderHomeEvents(currentEvents);
-					if (typeof renderBannerVideo === 'function') renderBannerVideo();
-					if (typeof renderAppLogo === 'function') renderAppLogo();
-					if (typeof renderNextEventPromo === 'function') renderNextEventPromo();
-					if (typeof renderCountdown === 'function') renderCountdown();
-					break;
-				case 'events':
-					renderPublicEvents(currentEvents);
-					break;
-				case 'tickets':
-					syncTicketCounters();
-					break;
-				case 'merch':
-					renderMerchPage();
-					break;
-				case 'galleries':
-					renderGalleryEventList();
-					break;
-				case 'scanner':
-					startScanner();
-					break;
-				case 'drags':
-					renderDragList();
-					break;
-			}
+	// Buscar página por data-page attribute
+	const pageElement = document.querySelector(`[data-page="${pageId}"]`);
+	
+	if (pageElement) {
+		pageElement.classList.remove('hidden');
+		void pageElement.offsetWidth; // Trigger reflow for animation
+		pageElement.classList.add('page-fade-in');
+	} else {
+		console.warn(`Página "${pageId}" no encontrada. Mostrando 'home'.`);
+		const homePage = document.querySelector('[data-page="home"]');
+		if (homePage) {
+			homePage.classList.remove('hidden');
+			homePage.classList.add('page-fade-in');
+			pageId = 'home';
 		}
 	}
 
+	// Cerrar menú móvil si está abierto
+	const mobileMenu = document.getElementById('mobile-menu');
+	if (mobileMenu) {
+		mobileMenu.classList.add('hidden');
+	}
+
+	// Actualizar indicadores de navegación
+	updateNavIndicator(pageId);
+
+	// Ejecutar init específicos por página
+	switch (pageId) {
+		case 'home':
+			if (typeof renderPastGalleries === 'function') renderPastGalleries(appState.events || []);
+			if (typeof renderHomeEvents === 'function') renderHomeEvents(currentEvents);
+			if (typeof renderBannerVideo === 'function') renderBannerVideo();
+			if (typeof renderAppLogo === 'function') renderAppLogo();
+			if (typeof renderNextEventPromo === 'function') renderNextEventPromo();
+			if (typeof renderCountdown === 'function') renderCountdown();
+			break;
+		case 'events':
+			if (typeof renderPublicEvents === 'function') renderPublicEvents(currentEvents);
+			break;
+		case 'tickets':
+			if (typeof syncTicketCounters === 'function') syncTicketCounters();
+			break;
+		case 'merch':
+			if (typeof renderMerchPage === 'function') renderMerchPage();
+			break;
+		case 'gallery':
+			if (typeof renderGalleryEventList === 'function') renderGalleryEventList();
+			break;
+		case 'scanner':
+			if (typeof startScanner === 'function') startScanner();
+			break;
+		case 'drags':
+			if (typeof renderDragList === 'function') renderDragList();
+			break;
+		case 'admin':
+			if (typeof checkAdminUI === 'function') checkAdminUI();
+			break;
+	}
+
 	// Scroll al top
-	window.scrollTo(0, 0);
+	window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
  * Actualiza los indicadores visuales de navegación.
  */
 function updateNavIndicator(currentPage) {
-	const navButtons = {
-		'home': 'homeNavBtn',
-		'events': 'eventsNavBtn',
-		'drags': 'dragsNavBtn',
-		'galleries': 'galleriesNavBtn',
-		'merch': 'merchNavBtn',
-		'scanner': 'scannerNavBtn',
-		'tickets': 'ticketsNavBtn',
-		'login': 'loginNavBtn',
-		'info': 'infoNavBtn'
-	};
-
-	// Quitar clase activa de todos los botones
-	document.querySelectorAll('[id*="NavBtn"]').forEach(btn => {
-		btn.classList.remove('border-b-4', 'border-yellow-400');
-		btn.classList.add('border-transparent');
+	// Actualizar todos los enlaces de navegación (bottom pill nav y mobile menu)
+	document.querySelectorAll('[data-nav]').forEach(link => {
+		if (link.dataset.nav === currentPage) {
+			link.classList.add('active');
+		} else {
+			link.classList.remove('active');
+		}
 	});
 
-	// Agregar clase activa al botón de la página actual
-	const activeBtn = document.getElementById(navButtons[currentPage]);
-	if (activeBtn) {
-		activeBtn.classList.add('border-b-4', 'border-yellow-400');
-		activeBtn.classList.remove('border-transparent');
+	// Mover el indicador de la barra inferior si existe
+	const navActiveIndicator = document.querySelector('.nav-active-indicator');
+	const bottomPillNav = document.getElementById('bottom-pill-nav');
+	
+	if (navActiveIndicator && bottomPillNav) {
+		const activeLink = bottomPillNav.querySelector(`[data-nav="${currentPage}"]`);
+		if (activeLink) {
+			const rect = activeLink.getBoundingClientRect();
+			const navRect = bottomPillNav.getBoundingClientRect();
+			const left = rect.left - navRect.left;
+			const width = rect.width;
+			
+			navActiveIndicator.style.left = `${left}px`;
+			navActiveIndicator.style.width = `${width}px`;
+		}
 	}
 }
 
