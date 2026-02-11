@@ -217,26 +217,5 @@ function findNextUpcomingEvent(events) {
 	return events.find(e => e && e.date && !e.isArchived && new Date(e.date) > now);
 }
 
-// Export functions (for modular use)
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		readFileAsDataURL,
-		readFileAsText,
-		readFileAsArrayBuffer,
-		initScrollRevealAnimation,
-		updateNavIndicator,
-		showLoading,
-		showInfoModal,
-		closeModal,
-		shuffleArray,
-		loadImage,
-		showImageModal,
-		handleImageModalNext,
-		handleImageModalPrev,
-		clearEventListeners,
-		clearDynamicListListeners,
-		addTrackedListener,
-		isValidHex,
-		findNextUpcomingEvent
-	};
-}
+// All functions above are available in global scope automatically when script loads
+

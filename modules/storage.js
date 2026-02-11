@@ -219,19 +219,4 @@ function uploadFileWithProgress(file, type, onProgress) {
 	});
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		loadInitialDataFromServer,
-		saveAppState,
-		saveTicketState,
-		saveMerchSalesState,
-		uploadFileWithProgress,
-		SAVE_APP_STATE_URL,
-		SAVE_TICKETS_URL,
-		SAVE_MERCH_SALES_URL,
-		UPLOAD_URL,
-		LOGIN_URL,
-		LOGOUT_URL
-	};
-}
+

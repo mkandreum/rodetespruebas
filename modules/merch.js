@@ -344,13 +344,4 @@ async function generateMerchSale(drag, itemId, userName, userSurname, userEmail,
 	return saleId;
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		renderMerchPage,
-		createMerchCard,
-		handleMerchBuyClick,
-		handleMerchPurchaseSubmit,
-		generateMerchSale
-	};
-}
+

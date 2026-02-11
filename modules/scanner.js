@@ -170,14 +170,4 @@ function handleScannerCancel() {
 	startScanner();
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		startScanner,
-		stopScanner,
-		handleQRScanned,
-		showScannerConfirmationView,
-		handleScannerConfirm,
-		handleScannerCancel
-	};
-}
+

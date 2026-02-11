@@ -296,16 +296,5 @@ async function handleResendTicketEmail(ticketId) {
 	}
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		handleAdminLogin,
-		handleLogout,
-		checkAdminUI,
-		getSMTPConfig,
-		handleSaveSMTPConfig,
-		handleTestSMTP,
-		handleSendWinnerNotification,
-		handleResendTicketEmail
-	};
-}
+// All functions above are available in global scope automatically when script loads
+

@@ -231,16 +231,4 @@ function getDragsWithMerch() {
 	return (appState?.drags || []).filter(d => d.merchItems && d.merchItems.length > 0);
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		renderAdminDrags,
-		handleSaveDrag,
-		resetDragForm,
-		handleEditDragClick,
-		handleDeleteDrag,
-		getDragById,
-		getAllDrags,
-		getDragsWithMerch
-	};
-}
+

@@ -290,14 +290,5 @@ async function handleRestore(event) {
 	}
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		handleFileUpload,
-		handleMultipleFileUpload,
-		renderAdminGalleryGrid,
-		downloadImageWithWatermark,
-		handleBackup,
-		handleRestore
-	};
-}
+// All functions above are available in global scope automatically when script loads
+

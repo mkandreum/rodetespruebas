@@ -343,14 +343,4 @@ function startCountdownTimer() {
 	countdownInterval = setInterval(updateTimer, 1000);
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		renderHomeEvents,
-		renderPublicEvents,
-		renderAppLogo,
-		renderNextEventPromo,
-		renderCountdown,
-		startCountdownTimer
-	};
-}
+

@@ -285,18 +285,5 @@ function getPastEvents() {
 	return (appState?.events || []).filter(e => e && e.date && new Date(e.date) < now);
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		renderAdminEvents,
-		handleSaveEvent,
-		resetEventForm,
-		handleEditEventClick,
-		handleDeleteEvent,
-		handleArchiveEvent,
-		handleGetTicket,
-		getEventById,
-		getActiveEvents,
-		getPastEvents
-	};
-}
+// All functions above are available in global scope automatically when script loads
+

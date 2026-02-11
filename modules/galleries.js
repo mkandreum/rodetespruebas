@@ -314,13 +314,4 @@ function renderDragGalleryImages(dragId) {
 	});
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		renderGalleryEventList,
-		renderPastGalleries,
-		renderGalleryImages,
-		renderDragList,
-		renderDragGalleryImages
-	};
-}
+

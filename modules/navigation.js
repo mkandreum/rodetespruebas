@@ -354,17 +354,5 @@ function openImageModal(galleryArray, startIndex = 0) {
 	}
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		showPage,
-		updateNavIndicator,
-		showAdminPage,
-		toggleAdminPanel,
-		renderMerchAdminPanel,
-		renderGalleryAdminPanel,
-		openInfoModal,
-		closeModal,
-		openImageModal
-	};
-}
+// All functions above are available in global scope automatically when script loads
+

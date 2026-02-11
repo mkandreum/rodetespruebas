@@ -165,14 +165,4 @@ function isValidEmail(email) {
 	return emailRegex.test(email);
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		syncTicketCounters,
-		handleEmailSubmit,
-		handleDownloadTicket,
-		getEventTickets,
-		getTicketById,
-		isValidEmail
-	};
-}
+

@@ -317,17 +317,4 @@ function handleAdminMenuTap() {
 	}
 }
 
-// Export functions
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = {
-		showAdminPage,
-		renderAdminEvents,
-		handleEditEventClick,
-		handleDeleteEvent,
-		renderAdminMerch,
-		checkAdminUI,
-		handleAdminLogin,
-		handleLogout,
-		handleAdminMenuTap
-	};
-}
+
