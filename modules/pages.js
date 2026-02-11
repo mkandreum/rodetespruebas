@@ -4,7 +4,7 @@
  */
 
 // DOM element references
-const homeEventListContainer = document.getElementById('home-events-container');
+const homeEventListContainer = document.getElementById('home-event-list-container');
 const eventListContainer = document.getElementById('event-list-container');
 const nextEventPromoContainer = document.getElementById('next-event-promo-container');
 const nextEventPromo = document.getElementById('next-event-promo');
@@ -510,5 +510,4 @@ function startEventCountdowns() {
 	updateCountdowns();
 	window.eventCountdownInterval = setInterval(updateCountdowns, 1000);
 }
-
 

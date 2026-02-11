@@ -7,7 +7,7 @@
  * Renderiza la lista de drags en el panel admin.
  */
 function renderAdminDrags(drags) {
-	const AdminDragsContainer = document.getElementById('admin-drags-list-container');
+	const AdminDragsContainer = document.getElementById('admin-drags-list-ul');
 	if (!AdminDragsContainer) return;
 
 	clearDynamicListListeners('adminDrags');
@@ -258,5 +258,4 @@ function getAllDrags() {
 function getDragsWithMerch() {
 	return (appState?.drags || []).filter(d => d.merchItems && d.merchItems.length > 0);
 }
-
 

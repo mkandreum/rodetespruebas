@@ -9,8 +9,8 @@
 async function handleAdminLogin(event) {
 	event.preventDefault();
 
-	const email = document.getElementById('adminEmail')?.value?.trim();
-	const password = document.getElementById('adminPassword')?.value?.trim();
+	const email = document.getElementById('email')?.value?.trim();
+	const password = document.getElementById('password')?.value?.trim();
 
 	if (!email || !password) {
 		showInfoModal("Por favor, completa email y contraseña.", true);
@@ -37,8 +37,8 @@ async function handleAdminLogin(event) {
 
 			showLoading(false);
 			showInfoModal("✅ ACCESO CONCEDIDO", false, () => {
-				document.getElementById('adminEmail').value = '';
-				document.getElementById('adminPassword').value = '';
+			document.getElementById('email').value = '';
+			document.getElementById('password').value = '';
 				showAdminPage();
 				checkAdminUI();
 			});
@@ -91,8 +91,8 @@ async function handleLogout() {
  * Verifica y actualiza la UI del admin según estado.
  */
 function checkAdminUI() {
-	const adminPage = document.getElementById('administratorPage');
-	const loginForm = document.getElementById('loginForm');
+	const adminPage = document.getElementById('admin-panel');
+	const loginForm = document.getElementById('login-form');
 
 	if (!adminPage) return;
 
@@ -100,11 +100,11 @@ function checkAdminUI() {
 		adminPage.classList.remove('hidden');
 		if (loginForm) loginForm.classList.add('hidden');
 		adminTapCounter = 0; // Reset en logout
-		document.getElementById('adminLogoutBtn')?.classList.remove('hidden');
+		document.getElementById('admin-logout-btn')?.classList.remove('hidden');
 	} else {
 		adminPage.classList.add('hidden');
 		if (loginForm) loginForm.classList.remove('hidden');
-		document.getElementById('adminLogoutBtn')?.classList.add('hidden');
+		document.getElementById('admin-logout-btn')?.classList.add('hidden');
 	}
 }
 
@@ -297,4 +297,3 @@ async function handleResendTicketEmail(ticketId) {
 }
 
 // All functions above are available in global scope automatically when script loads
-

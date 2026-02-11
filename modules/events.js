@@ -8,7 +8,7 @@
  */
 function renderAdminEvents(events) {
 	clearDynamicListListeners('adminEvents');
-	const adminEventsContainer = document.getElementById('admin-events-list-container');
+	const adminEventsContainer = document.getElementById('admin-events-list-ul');
 
 	if (!adminEventsContainer || !Array.isArray(events)) {
 		console.error("Admin events container not found or invalid events");
@@ -329,4 +329,3 @@ function getPastEvents() {
 }
 
 // All functions above are available in global scope automatically when script loads
-

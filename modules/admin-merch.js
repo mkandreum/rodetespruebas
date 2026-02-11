@@ -28,10 +28,10 @@ function handleAdminMerchDragSelect(e) {
  * Extraído de app-old-broken.js líneas 3195-3299
  */
 function renderAdminMerch() {
-	const adminMerchSelectDrag = document.getElementById('adminMerchSelectDrag');
-	const adminMerchListContainer = document.getElementById('adminMerchListContainer');
-	const addMerchItemForm = document.getElementById('addMerchItemForm');
-	const adminMerchSalesSummary = document.getElementById('adminMerchSalesSummary');
+	const adminMerchSelectDrag = document.getElementById('drag-merch-select-drag');
+	const adminMerchListContainer = document.getElementById('drag-merch-list-container');
+	const addMerchItemForm = document.getElementById('drag-merch-form');
+	const adminMerchSalesSummary = document.getElementById('drag-merch-sales-summary');
 
 	if (!adminMerchSelectDrag || !adminMerchListContainer || !appState || !appState.drags) return;
 	
@@ -150,15 +150,15 @@ function renderAdminMerch() {
  * Extraído de app-old-broken.js líneas 3472-3485
  */
 function resetMerchItemForm() {
-	const addMerchItemForm = document.getElementById('addMerchItemForm');
-	const merchItemImageUploadInput = document.getElementById('merchItemImageUploadInput');
-	const addMerchItemFormButton = document.getElementById('addMerchItemFormButton');
+	const addMerchItemForm = document.getElementById('drag-merch-form');
+	const merchItemImageUploadInput = document.getElementById('drag-merch-image-upload');
+	const addMerchItemFormButton = document.getElementById('save-drag-merch-btn');
 
 	if (!addMerchItemForm) return;
 	addMerchItemForm.reset();
 	editingMerchItemId = null; // No estamos editando
-	if (addMerchItemForm['edit-merch-item-id']) {
-		addMerchItemForm['edit-merch-item-id'].value = ''; // Limpiar ID oculto
+	if (addMerchItemForm['edit-drag-merch-id']) {
+		addMerchItemForm['edit-drag-merch-id'].value = ''; // Limpiar ID oculto
 	}
 	if (merchItemImageUploadInput) merchItemImageUploadInput.value = ''; // Limpiar input file
 
@@ -175,8 +175,8 @@ function resetMerchItemForm() {
  * Extraído de app-old-broken.js líneas 3490-3523
  */
 function handleEditMerchItemClick(e) {
-	const addMerchItemForm = document.getElementById('addMerchItemForm');
-	const addMerchItemFormButton = document.getElementById('addMerchItemFormButton');
+	const addMerchItemForm = document.getElementById('drag-merch-form');
+	const addMerchItemFormButton = document.getElementById('save-drag-merch-btn');
 
 	if (currentAdminMerchDragId === null || !appState) return;
 	const merchId = parseInt(e.target.dataset.merchId, 10);
@@ -198,12 +198,12 @@ function handleEditMerchItemClick(e) {
 	}
 
 	// Rellenar formulario
-	if (addMerchItemForm['edit-merch-item-id']) {
-		addMerchItemForm['edit-merch-item-id'].value = itemToEdit.id;
+	if (addMerchItemForm['edit-drag-merch-id']) {
+		addMerchItemForm['edit-drag-merch-id'].value = itemToEdit.id;
 	}
-	addMerchItemForm['merch-item-name'].value = itemToEdit.name || '';
-	addMerchItemForm['merch-item-price'].value = itemToEdit.price || 0;
-	addMerchItemForm['merch-item-image-url'].value = itemToEdit.imageUrl || '';
+	addMerchItemForm['drag-merch-name'].value = itemToEdit.name || '';
+	addMerchItemForm['drag-merch-price'].value = itemToEdit.price || 0;
+	addMerchItemForm['drag-merch-image-url'].value = itemToEdit.imageUrl || '';
 
 	editingMerchItemId = itemToEdit.id; // Marcar como editando
 
@@ -222,7 +222,7 @@ function handleEditMerchItemClick(e) {
  */
 async function handleSaveMerchItem(e) {
 	e.preventDefault();
-	const addMerchItemForm = document.getElementById('addMerchItemForm');
+	const addMerchItemForm = document.getElementById('drag-merch-form');
 
 	if (!addMerchItemForm || currentAdminMerchDragId === null || !appState) return;
 
@@ -250,9 +250,9 @@ async function handleSaveMerchItem(e) {
 
 	const formData = new FormData(addMerchItemForm);
 	const itemIdToSave = editingMerchItemId; // Null si es nuevo
-	const itemName = formData.get('merch-item-name')?.trim() || '';
-	const itemPrice = parseFloat(formData.get('merch-item-price'));
-	const itemImageUrl = formData.get('merch-item-image-url')?.trim() || '';
+	const itemName = formData.get('drag-merch-name')?.trim() || '';
+	const itemPrice = parseFloat(formData.get('drag-merch-price'));
+	const itemImageUrl = formData.get('drag-merch-image-url')?.trim() || '';
 
 	// Validaciones
 	if (!itemName) {
@@ -394,4 +394,3 @@ async function handleDeleteMerchItem(e) {
 		if (typeof showLoading === 'function') showLoading(false);
 	}
 }
-

@@ -26,13 +26,13 @@ function showAdminPage(adminPageId) {
 	});
 
 	// Renderizar contenido específico
-	if (adminPageId === 'admin-events') {
+	if (adminPageId === 'events') {
 		renderAdminEvents(appState?.events || []);
-	} else if (adminPageId === 'admin-drags') {
+	} else if (adminPageId === 'drags') {
 		renderAdminDrags(appState?.drags || []);
-	} else if (adminPageId === 'admin-merch') {
+	} else if (adminPageId === 'merch') {
 		renderAdminMerch();
-	} else if (adminPageId === 'admin-galleries') {
+	} else if (adminPageId === 'gallery') {
 		renderGalleryEventList();
 	}
 }
@@ -42,7 +42,7 @@ function showAdminPage(adminPageId) {
  */
 function renderAdminEvents(events) {
 	clearDynamicListListeners('adminEvents');
-	const adminEventsContainer = document.getElementById('admin-events-list-container');
+	const adminEventsContainer = document.getElementById('admin-events-list-ul');
 
 	if (!adminEventsContainer || !Array.isArray(events)) {
 		console.error("Admin events container not found or invalid events");
@@ -222,15 +222,15 @@ function renderAdminMerch() {
  * Verifica y actualiza la UI del admin.
  */
 function checkAdminUI() {
-	const adminSection = document.getElementById('admin-section');
-	const loginSection = document.getElementById('login-section');
+	const adminPanel = document.getElementById('admin-panel');
+	const loginFormEl = document.getElementById('login-form');
 
 	if (isLoggedIn) {
-		if (adminSection) adminSection.classList.remove('hidden');
-		if (loginSection) loginSection.classList.add('hidden');
+		if (adminPanel) adminPanel.classList.remove('hidden');
+		if (loginFormEl) loginFormEl.classList.add('hidden');
 	} else {
-		if (adminSection) adminSection.classList.add('hidden');
-		if (loginSection) loginSection.classList.remove('hidden');
+		if (adminPanel) adminPanel.classList.add('hidden');
+		if (loginFormEl) loginFormEl.classList.remove('hidden');
 	}
 }
 
@@ -239,10 +239,11 @@ function checkAdminUI() {
  */
 async function handleAdminLogin(e) {
 	e.preventDefault();
-	if (!loginForm) return;
+	const form = document.getElementById('login-form');
+	if (!form) return;
 
-	const email = loginForm['email'].value.trim().toLowerCase();
-	const password = loginForm['password'].value;
+	const email = form['email'].value.trim().toLowerCase();
+	const password = form['password'].value;
 
 	if (!email || !password) {
 		showInfoModal("POR FAVOR, INTRODUCE EMAIL Y CONTRASEÑA.", true);
@@ -264,7 +265,7 @@ async function handleAdminLogin(e) {
 		if (data.ok) {
 			isLoggedIn = true;
 			adminEmail = email;
-			loginForm.reset();
+			form.reset();
 			checkAdminUI();
 			showAdminPage('admin-events');
 			showInfoModal("¡ACCESO CONCEDIDO!", false);
@@ -322,10 +323,10 @@ function handleAdminMenuTap() {
  * Extraído de app-old-broken.js líneas 3304-3332
  */
 function renderAdminMerchSalesSummary() {
-	const adminMerchSalesSummary = document.getElementById('adminMerchSalesSummary');
-	const adminMerchTotalItems = document.getElementById('adminMerchTotalItems');
-	const adminMerchTotalRevenue = document.getElementById('adminMerchTotalRevenue');
-	const adminMerchViewSalesBtn = document.getElementById('adminMerchViewSalesBtn');
+	const adminMerchSalesSummary = document.getElementById('drag-merch-sales-summary');
+	const adminMerchTotalItems = document.getElementById('drag-merch-total-items');
+	const adminMerchTotalRevenue = document.getElementById('drag-merch-total-revenue');
+	const adminMerchViewSalesBtn = document.getElementById('drag-merch-view-sales-btn');
 	
 	if (!adminMerchSalesSummary || !adminMerchTotalItems || !adminMerchTotalRevenue || !adminMerchViewSalesBtn || currentAdminMerchDragId === null) return;
 
@@ -495,5 +496,3 @@ async function handleMarkMerchDelivered(e) {
 		if (typeof showLoading === 'function') showLoading(false);
 	}
 }
-
-
