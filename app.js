@@ -2455,7 +2455,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 				const imageUrl = drag.coverImageUrl || `https://placehold.co/400x400/000/fff?text=${encodeURIComponent(drag.name || 'Drag')}&font=vt323`;
 				const merchItems = drag.merchItems || [];
 
-				// Construcción del Carousel de Merch (Reutilizado)
+				// Construcción del Grid de Merch (cambiado de carrusel a grid)
 				let merchCarouselHtml = '';
 				if (merchItems.length > 0) {
 					let itemsHtml = '';
@@ -2463,14 +2463,14 @@ window.addEventListener('DOMContentLoaded', async () => {
 						const itemImage = item.imageUrl || `https://placehold.co/200x200/000/fff?text=${encodeURIComponent(item.name || 'Item')}&font=vt323`;
 						const price = (parseFloat(item.price) || 0).toFixed(2);
 						itemsHtml += `
-							<div class="flex-shrink-0 w-36 snap-center flex flex-col mb-2">
+							<div class="flex flex-col h-full">
 								<!-- 1. Imagen (Limpia) -->
-								<div class="h-32 w-full bg-black overflow-hidden flex items-center justify-center">
-									<img src="${itemImage}" alt="${item.name}" class="object-cover w-full h-full" onerror="this.src='https://placehold.co/200x200/000/fff?text=Error&font=vt323'">
+								<div class="aspect-square bg-black overflow-hidden flex items-center justify-center mb-2">
+									<img src="${itemImage}" alt="${item.name}" class="object-contain w-full h-full" onerror="this.src='https://placehold.co/200x200/000/fff?text=Error&font=vt323'">
 								</div>
 								
 								<!-- 2. Info (Caja Pegada) -->
-								<div class="bg-black/60 border-x border-b border-white/10 p-2">
+								<div class="bg-black/60 border-x border-b border-white/10 p-2 flex-grow">
 									<p class="text-white text-xs font-pixel truncate mb-1" title="${item.name}">${item.name}</p>
 									<p class="text-pink-500 font-bold text-sm">${price}€</p>
 								</div>
@@ -2489,8 +2489,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 					merchCarouselHtml = `
 						<div class="mt-4 mb-2">
-							<h4 class="text-sm font-pixel text-pink-400 mb-2 border-b border-gray-800 pb-1">TIENDA OFICIAL:</h4>
-							<div class="flex gap-3 overflow-x-auto pb-4 snap-x scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+							<h4 class="text-sm font-pixel text-pink-400 mb-3 border-b border-gray-800 pb-1">TIENDA OFICIAL:</h4>
+							<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
 								${itemsHtml}
 							</div>
 						</div>`;
