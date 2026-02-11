@@ -1429,7 +1429,7 @@ $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
                     class="bg-white text-black rounded-full h-8 w-8 flex items-center justify-center border-2 border-black text-2xl font-bold leading-none hover:bg-gray-300 z-10">&times;</button>
             </div>
             <div id="merch-gallery-content"
-                class="text-gray-300 grid grid-cols-2 md:grid-cols-3 gap-6">
+                class="text-gray-300 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <p class="text-gray-400 text-center font-pixel col-span-full">Cargando merchandising...</p>
             </div>
         </div>
