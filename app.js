@@ -177,14 +177,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 	const logoBtn = document.getElementById('logo-btn');
 	const scanQrBtn = document.getElementById('scan-qr-btn');
 
-	// Pages.js DOM elements
-	const nextEventPromoContainer = document.getElementById('next-event-promo-container');
-	const nextEventPromo = document.getElementById('next-event-promo');
-	const homeCountdownSection = document.getElementById('home-countdown-section');
-	const countdownTimer = document.getElementById('countdown-timer');
-	const countdownLabel = document.getElementById('countdown-label');
-	const countdownFooterDate = document.getElementById('countdown-footer-date');
-
 	// Form elements references
 	const addEventForm = document.getElementById('addEventForm');
 	const clearEventFormButton = document.getElementById('clearEventFormButton');
