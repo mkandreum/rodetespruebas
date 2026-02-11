@@ -465,6 +465,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 		addTrackedListener(dragGalleryBackBtn, 'click', (e) => { e.preventDefault(); renderDragList(); });
 	}
 
+	// Content management
+	if (contentManageForm && typeof addTrackedListener === 'function' && typeof handleSaveContent === 'function') {
+		addTrackedListener(contentManageForm, 'submit', handleSaveContent);
+	}
+
 	// Backup/restore
 	if (backupBtn && typeof addTrackedListener === 'function' && typeof handleBackup === 'function') {
 		addTrackedListener(backupBtn, 'click', handleBackup);

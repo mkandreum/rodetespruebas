@@ -1644,6 +1644,7 @@ $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
     <script src="modules/webmerch.js" defer></script>
     <script src="modules/scanner.js" defer></script>
     <script src="modules/admin.js" defer></script>
+    <script src="modules/admin-content.js" defer></script>
     <script src="modules/pages.js" defer></script>
     <script src="modules/events.js" defer></script>
     <script src="modules/upload.js" defer></script>
