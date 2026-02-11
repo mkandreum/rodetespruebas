@@ -366,16 +366,17 @@ function renderBannerVideo() {
 	const isImageUrl = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url) || url.startsWith('uploads/') || url.startsWith('data:image');
 	const isVideoUrl = /\.(mp4|webm|ogv)$/i.test(url) || (url.startsWith('uploads/') && !isImageUrl) || url.startsWith('data:video');
 	
-	// Validate embed URLs more securely by checking the hostname
+	// Validate embed URLs more securely by checking the hostname exactly
 	let isEmbedUrl = false;
-	if (url.includes('/embed/') || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')) {
+	if (url.includes('/embed/') || url.includes('youtube') || url.includes('youtu.be') || url.includes('vimeo')) {
 		try {
 			const urlObj = new URL(url);
 			const hostname = urlObj.hostname.toLowerCase();
-			isEmbedUrl = hostname.includes('youtube.com') || 
-			             hostname.includes('youtu.be') || 
-			             hostname.includes('vimeo.com') ||
-			             hostname.includes('youtube-nocookie.com');
+			// Check if hostname exactly matches or ends with trusted domain
+			isEmbedUrl = hostname === 'youtube.com' || hostname.endsWith('.youtube.com') ||
+			             hostname === 'youtu.be' || hostname.endsWith('.youtu.be') ||
+			             hostname === 'vimeo.com' || hostname.endsWith('.vimeo.com') ||
+			             hostname === 'youtube-nocookie.com' || hostname.endsWith('.youtube-nocookie.com');
 		} catch (e) {
 			isEmbedUrl = false;
 		}
