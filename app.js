@@ -6030,7 +6030,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 		// Validar tipo MIME
 		if (!acceptTypes.some(type => file.type.startsWith(type))) {
 			showInfoModal(`Tipo de archivo no permitido. ${isBannerInput ? 'Sube imagen o vídeo MP4/WebM.' : 'Sube una imagen.'}`, true);
-			event.target.value = ''; return;
+			event.target.value = '';
+			return;
 		}
 
 		// Validar tamaño
@@ -6038,7 +6039,15 @@ window.addEventListener('DOMContentLoaded', async () => {
 		const maxSizeBytes = maxSizeMB * 1024 * 1024;
 		if (file.size > maxSizeBytes) {
 			showInfoModal(`Archivo "${file.name}" demasiado grande (Máx ${maxSizeMB}MB).`, true);
-			event.target.value = ''; return;
+			event.target.value = '';
+			return;
+		}
+
+		// Asegurar token CSRF disponible antes de subir
+		if (!window.PHP_CSRF_TOKEN) {
+			showInfoModal("Error de seguridad: token de sesión no disponible. Recarga e inicia sesión de nuevo.", true);
+			event.target.value = '';
+			return;
 		}
 
 		showLoading(true);
@@ -6046,6 +6055,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 		const formData = new FormData();
 		formData.append('file', file); // El archivo en sí
 		formData.append('type', fileTypeForUpload); // 'image' o 'video' para PHP
+		formData.append('csrf_token', window.PHP_CSRF_TOKEN); // Requerido por upload.php
 
 		try {
 			const response = await fetch(UPLOAD_URL, {
