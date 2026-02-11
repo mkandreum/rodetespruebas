@@ -439,7 +439,7 @@ function renderBannerVideo() {
 			}
 			element.src = embedUrl;
 			element.className = "absolute top-0 left-0 w-full h-full border-0";
-			element.setAttribute('frameborder', '0');
+			element.style.border = 'none';
 			element.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
 			element.setAttribute('allowfullscreen', '');
 		} else {
