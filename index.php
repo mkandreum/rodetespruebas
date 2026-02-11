@@ -1422,14 +1422,14 @@ $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
     <div id="merch-gallery-modal"
         class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 modal-backdrop-fade-in">
         <div
-            class="bg-black border-2 border-white max-w-3xl w-full p-6 modal-content-scale-in rounded-none flex flex-col max-h-[90vh]">
+            class="bg-black border-2 border-white max-w-3xl w-full p-6 modal-content-scale-in rounded-none flex flex-col max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 flex-shrink-0">
                 <h3 id="merch-gallery-title" class="text-2xl font-pixel text-white text-glow-white">Merchandising</h3>
                 <button data-close-modal="merch-gallery-modal"
                     class="bg-white text-black rounded-full h-8 w-8 flex items-center justify-center border-2 border-black text-2xl font-bold leading-none hover:bg-gray-300 z-10">&times;</button>
             </div>
             <div id="merch-gallery-content"
-                class="text-gray-300 overflow-y-auto pr-2 grid grid-cols-2 md:grid-cols-3 gap-6">
+                class="text-gray-300 grid grid-cols-2 md:grid-cols-3 gap-6">
                 <p class="text-gray-400 text-center font-pixel col-span-full">Cargando merchandising...</p>
             </div>
         </div>
