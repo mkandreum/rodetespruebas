@@ -139,7 +139,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 	let currentEvents = [...(appState.events || [])];
 
-	// Intersection Observer
+	// Intersection Observer for scroll reveal animations
 	const observerOptions = { root: null, rootMargin: '50px', threshold: 0.1 };
 	const observer = new IntersectionObserver((entries) => {
 		entries.forEach(entry => {
@@ -149,6 +149,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 			}
 		});
 	}, observerOptions);
+
+	// Global function to observe elements with reveal-on-scroll class
+	window.observeRevealElements = function() {
+		document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+			observer.observe(el);
+		});
+	};
 
 	// DOM References
 	const pages = {}, adminPages = {}, adminNavLinks = {}, mobileNavLinks = {}, bottomPillNavLinks = {};

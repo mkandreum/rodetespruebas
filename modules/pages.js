@@ -3,6 +3,10 @@
  * Renderizado de páginas públicas (home, eventos, countdown, promos)
  */
 
+// DOM element references
+const homeEventListContainer = document.getElementById('home-events-container');
+const eventListContainer = document.getElementById('event-list-container');
+
 let countdownInterval = null;
 let currentEvents = [];
 
