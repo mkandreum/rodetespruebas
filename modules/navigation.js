@@ -69,6 +69,8 @@ function showPage(pageId) {
 			break;
 		case 'admin':
 			if (typeof checkAdminUI === 'function') checkAdminUI();
+			// Show events admin page by default
+			if (typeof showAdminPage === 'function') showAdminPage('events');
 			break;
 	}
 
@@ -110,35 +112,72 @@ function updateNavIndicator(currentPage) {
 /**
  * Muestra la página de administrador.
  */
-function showAdminPage() {
-	const adminPage = document.getElementById('administratorPage');
-
-	if (!adminPage) {
-		console.warn("Página de admin no encontrada");
-		return;
-	}
-
-	// Ocultar todas las páginas públicas
-	document.querySelectorAll('[id*="Page"]').forEach(page => {
-		if (page.id !== 'administratorPage') {
-			page.classList.add('hidden');
-		}
+function showAdminPage(adminPageId) {
+	// Hide all admin pages
+	document.querySelectorAll('[data-admin-page]').forEach(page => {
+		page.classList.add('hidden');
 	});
 
-	// Mostrar página de admin
-	adminPage.classList.remove('hidden');
+	// Show selected admin page
+	const selectedPage = document.querySelector(`[data-admin-page="${adminPageId}"]`);
+	if (selectedPage) {
+		selectedPage.classList.remove('hidden');
+	} else {
+		console.warn(`Admin page "${adminPageId}" not found. Showing 'events'.`);
+		const eventsPage = document.querySelector('[data-admin-page="events"]');
+		if (eventsPage) {
+			eventsPage.classList.remove('hidden');
+			adminPageId = 'events';
+		}
+	}
 
-	// Inicializar UI del admin
-	checkAdminUI();
+	// Update nav button styles
+	document.querySelectorAll('[data-admin-nav]').forEach(btn => {
+		btn.classList.remove('bg-white', 'text-black');
+		btn.classList.add('bg-gray-700', 'text-white', 'hover:bg-gray-600');
+	});
 
-	// Renderizar datos
-	renderAdminEvents(appState.events);
-	renderAdminDrags(appState.drags);
-	renderMerchAdminPanel();
-	renderGalleryAdminPanel();
+	const activeBtn = document.querySelector(`[data-admin-nav="${adminPageId}"]`);
+	if (activeBtn) {
+		activeBtn.classList.add('bg-white', 'text-black');
+		activeBtn.classList.remove('bg-gray-700', 'text-white', 'hover:bg-gray-600');
+	}
 
-	// Scroll al top
-	window.scrollTo(0, 0);
+	// Re-render dynamic content when changing admin tabs
+	if (adminPageId === 'events') {
+		if (typeof renderAdminEvents === 'function') renderAdminEvents(currentEvents);
+	}
+	if (adminPageId === 'drags') {
+		if (typeof renderAdminDrags === 'function') renderAdminDrags(appState.drags);
+	}
+	if (adminPageId === 'merch') {
+		if (typeof renderAdminMerch === 'function') renderAdminMerch();
+		if (typeof renderWebMerchList === 'function') renderWebMerchList();
+		if (typeof renderWebMerchSalesSummary === 'function') renderWebMerchSalesSummary();
+		if (typeof renderDragMerchSelect === 'function') renderDragMerchSelect();
+		if (typeof renderDragMerchSalesSummary === 'function') renderDragMerchSalesSummary();
+	}
+	if (adminPageId === 'smtp') {
+		if (typeof renderSMTPConfig === 'function') renderSMTPConfig();
+		if (typeof renderEmailNotifications === 'function') renderEmailNotifications();
+	}
+	if (adminPageId === 'giveaway') {
+		if (typeof renderGiveawayEvents === 'function') renderGiveawayEvents(currentEvents);
+	}
+	if (adminPageId === 'gallery' || adminPageId === 'settings') {
+		if (typeof loadContentToAdmin === 'function') loadContentToAdmin();
+	}
+
+	// Reset forms when leaving their tab while editing
+	if (adminPageId !== 'events' && editingEventId !== null) {
+		if (typeof resetEventForm === 'function') resetEventForm();
+	}
+	if (adminPageId !== 'drags' && editingDragId !== null) {
+		if (typeof resetDragForm === 'function') resetDragForm();
+	}
+	if (adminPageId !== 'merch' && editingMerchItemId !== null) {
+		if (typeof resetMerchItemForm === 'function') resetMerchItemForm();
+	}
 }
 
 /**
