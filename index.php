@@ -60,7 +60,7 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
 
 // Generate CSRF token if logged in
 $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
-
+?>
 <!DOCTYPE html>
 <html lang="es">
 
