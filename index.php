@@ -492,7 +492,7 @@ $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
                 <!-- Barra de Navegación de Drags con Merch (Chips) -->
                 <div id="merch-drags-nav-bar" class="mb-8 flex flex-wrap justify-center gap-4 px-2"></div>
 
-                <div id="drags-merch-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div id="drags-merch-list-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
                     <p class="text-gray-400 text-center col-span-full font-pixel">Cargando merch de drags...</p>
                 </div>
             </div>
