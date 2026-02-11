@@ -1558,9 +1558,6 @@ $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
         window.PHP_CSRF_TOKEN = <?php echo json_encode($csrfToken); ?>;
     </script>
 
-    <!--  App Principal (Carga diferida) -->
-    <script src="app.js?v=<?php echo time(); ?>" defer></script>
-
     <!-- PWA Service Worker Registration -->
     <script>
         // Register Service Worker
