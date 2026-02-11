@@ -78,7 +78,7 @@ $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
         rel="stylesheet">
 
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json?v=<?php echo time(); ?>">
 
     <!-- iOS PWA Support -->
     <meta name="apple-mobile-web-app-capable" content="yes">
