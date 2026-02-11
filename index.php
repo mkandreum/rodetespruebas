@@ -1558,7 +1558,22 @@ $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
         window.PHP_CSRF_TOKEN = <?php echo json_encode($csrfToken); ?>;
     </script>
 
-    <!--  App Principal (Carga diferida) -->
+    <!-- Módulos de JavaScript (Carga ordenada antes de app.js) -->
+    <script src="modules/utils.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/storage.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/galleries.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/tickets.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/drags.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/merch.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/scanner.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/admin.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/pages.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/events.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/upload.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/auth.js?v=<?php echo time(); ?>" defer></script>
+    <script src="modules/navigation.js?v=<?php echo time(); ?>" defer></script>
+
+    <!--  App Principal (Carga después de módulos) -->
     <script src="app.js?v=<?php echo time(); ?>" defer></script>
 
     <!-- PWA Service Worker Registration -->
