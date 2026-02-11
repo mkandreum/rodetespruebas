@@ -1641,12 +1641,14 @@ $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
     <script src="modules/tickets.js" defer></script>
     <script src="modules/drags.js" defer></script>
     <script src="modules/merch.js" defer></script>
+    <script src="modules/webmerch.js" defer></script>
     <script src="modules/scanner.js" defer></script>
     <script src="modules/admin.js" defer></script>
     <script src="modules/pages.js" defer></script>
     <script src="modules/events.js" defer></script>
     <script src="modules/upload.js" defer></script>
     <script src="modules/auth.js" defer></script>
+    <script src="modules/email.js" defer></script>
     <script src="modules/navigation.js" defer></script>
 
     <!-- APP PRINCIPAL -->
