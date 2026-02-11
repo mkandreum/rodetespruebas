@@ -1,3 +1,0 @@
-# Proteger scripts de utilidades
-Order Deny,Allow
-Deny from all

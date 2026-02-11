@@ -1,3 +1,0 @@
-# Proteger carpeta de configuración
-Order Deny,Allow
-Deny from all
