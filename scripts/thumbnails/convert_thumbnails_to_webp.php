@@ -18,7 +18,7 @@ if (!extension_loaded('gd')) {
 echo "🖼️  Conversor de Miniaturas JPG → WebP\n";
 echo "=====================================\n\n";
 
-$uploadsDir = __DIR__ . '/uploads/';
+$uploadsDir = __DIR__ . '/../../uploads/';
 $thumbnailsDir = $uploadsDir . 'thumbnails/';
 
 if (!is_dir($thumbnailsDir)) {

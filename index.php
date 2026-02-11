@@ -1,7 +1,7 @@
 <?php
 // --- PHP: Cargar Datos del Servidor ---
 
-require_once __DIR__ . '/security_config.php';
+require_once __DIR__ . '/config/security_config.php';
 
 // Start secure session
 startSecureSession();
@@ -61,7 +61,6 @@ $adminEmail = isset($_SESSION['admin_email']) ? $_SESSION['admin_email'] : '';
 // Generate CSRF token if logged in
 $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
 
-?>
 <!DOCTYPE html>
 <html lang="es">
 

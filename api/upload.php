@@ -2,7 +2,7 @@
 // upload.php - Script para subir imágenes
 // Seguridad: Verificar sesión, tipos de archivo, etc.
 
-require_once __DIR__ . '/security_config.php';
+require_once __DIR__ . '/../config/security_config.php';
 
 // 1. Verificar autenticación
 startSecureSession();

@@ -20,12 +20,12 @@ let currentImageModalIndex = 0;
 // --- FIN NUEVO ---
 
 // --- Server Storage Functions (PHP Endpoints) ---
-const SAVE_APP_STATE_URL = 'save.php';
-const SAVE_TICKETS_URL = 'save_tickets.php';
-const SAVE_MERCH_SALES_URL = 'save_merch_sales.php';
-const UPLOAD_URL = 'upload.php';
-const LOGIN_URL = 'login.php';
-const LOGOUT_URL = 'logout.php';
+const SAVE_APP_STATE_URL = 'api/save.php';
+const SAVE_TICKETS_URL = 'api/save_tickets.php';
+const SAVE_MERCH_SALES_URL = 'api/save_merch_sales.php';
+const UPLOAD_URL = 'api/upload.php';
+const LOGIN_URL = 'auth/login.php';
+const LOGOUT_URL = 'auth/logout.php';
 
 /**
  * Carga los datos iniciales proporcionados por PHP en index.php.
@@ -2252,25 +2252,29 @@ window.addEventListener('DOMContentLoaded', async () => {
 						const itemImage = item.imageUrl || `https://placehold.co/200x200/000/fff?text=${encodeURIComponent(item.name || 'Item')}&font=vt323`;
 						const price = (parseFloat(item.price) || 0).toFixed(2);
 						itemsHtml += `
-							<div class="flex-shrink-0 w-36 bg-black border border-gray-700 p-2 snap-center flex flex-col">
-								<div class="h-24 w-full bg-gray-900 mb-2 overflow-hidden flex items-center justify-center">
-									<img src="${itemImage}" alt="${item.name}" class="object-cover w-full h-full" onerror="this.src='https://placehold.co/200x200/000/fff?text=Error&font=vt323'">
+							<div class="merch-carousel-item flex-shrink-0 w-36 bg-black border border-gray-700 p-2 snap-center flex flex-col relative">
+								${item.badge ? `<span class="merch-badge ${item.badge}">${item.badge === 'new' ? 'NUEVO' : item.badge === 'exclusive' ? 'EXCLUSIVO' : 'LIMITADO'}</span>` : ''}
+								<div class="h-24 w-full bg-gray-900 mb-2 overflow-hidden flex items-center justify-center relative">
+									<img src="${itemImage}" alt="${item.name}" class="merch-image object-cover w-full h-full" onerror="this.src='https://placehold.co/200x200/000/fff?text=Error&font=vt323'" onload="this.parentElement.classList.add('image-loaded')">
 								</div>
 								<p class="text-white text-xs font-pixel truncate mb-1" title="${item.name}">${item.name}</p>
-								<p class="text-pink-500 font-bold text-sm mb-2">${price}€</p>
+								<div class="flex items-center justify-between mb-2">
+									<p class="merch-price text-pink-500 font-bold text-sm">${price}€</p>
+									${item.stock !== undefined ? `<span class="stock-counter ${item.stock < 5 ? 'low' : ''}"><span class="stock-dot"></span>${item.stock}</span>` : ''}
+								</div>
 								<button 
 									data-item-id="${item.id}" 
 									data-drag-id="${drag.id}"
-									class="auto-buy-merch-btn w-full bg-white text-black text-xs font-pixel py-1 hover:bg-pink-500 hover:text-white transition-colors mt-auto rounded-none border border-gray-400">
-									COMPRAR
+									class="auto-buy-merch-btn merch-buy-btn w-full bg-white text-black text-xs font-pixel py-1 hover:bg-pink-500 hover:text-white transition-colors mt-auto rounded-none border border-gray-400 relative z-10">
+									<span class="btn-icon">🛒</span>COMPRAR
 								</button>
 							</div>`;
 					});
 
 					merchCarouselHtml = `
-						<div class="mt-4 mb-2">
+						<div class="mt-4 mb-2 merch-carousel-container relative">
 							<h4 class="text-sm font-pixel text-pink-400 mb-2 border-b border-gray-800 pb-1">TIENDA OFICIAL:</h4>
-							<div class="flex gap-3 overflow-x-auto pb-4 snap-x scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+							<div class="merch-carousel flex gap-3 overflow-x-auto pb-4 snap-x">
 								${itemsHtml}
 							</div>
 						</div>`;
@@ -2463,32 +2467,38 @@ window.addEventListener('DOMContentLoaded', async () => {
 						const itemImage = item.imageUrl || `https://placehold.co/200x200/000/fff?text=${encodeURIComponent(item.name || 'Item')}&font=vt323`;
 						const price = (parseFloat(item.price) || 0).toFixed(2);
 						itemsHtml += `
-							<div class="flex flex-col h-full">
-								<!-- 1. Imagen (Limpia) -->
-								<div class="aspect-square bg-black overflow-hidden flex items-center justify-center mb-2">
-									<img src="${itemImage}" alt="${item.name}" class="object-contain w-full h-full" onerror="this.src='https://placehold.co/200x200/000/fff?text=Error&font=vt323'">
+							<div class="merch-grid-item flex flex-col h-full relative">
+								<!-- Badge (Mejora 5) -->
+								${item.badge ? `<span class="merch-badge ${item.badge}">${item.badge === 'new' ? 'NUEVO' : item.badge === 'exclusive' ? 'EXCLUSIVO' : 'LIMITADO'}</span>` : ''}
+								
+								<!-- 1. Imagen con efecto zoom (Mejora 2) -->
+								<div class="aspect-square bg-black overflow-hidden flex items-center justify-center mb-2 relative">
+									<img src="${itemImage}" alt="${item.name}" class="merch-image object-contain w-full h-full smooth-transition" onerror="this.src='https://placehold.co/200x200/000/fff?text=Error&font=vt323'" onload="this.parentElement.classList.add('image-loaded')">
 								</div>
 								
-								<!-- 2. Info (Caja Pegada) -->
-								<div class="bg-black/60 border-x border-b border-white/10 p-2 flex-grow">
+								<!-- 2. Info con glassmorphism (Mejora 2) -->
+								<div class="merch-info-box bg-black/60 border-x border-b border-white/10 p-2 flex-grow backdrop-blur-sm smooth-transition">
 									<p class="text-white text-xs font-pixel truncate mb-1" title="${item.name}">${item.name}</p>
-									<p class="text-pink-500 font-bold text-sm">${price}€</p>
+									<div class="flex items-center justify-between">
+										<p class="merch-price text-pink-500 font-bold text-sm">${price}€</p>
+										${item.stock !== undefined ? `<span class="stock-counter ${item.stock < 5 ? 'low' : ''}"><span class="stock-dot"></span>${item.stock}</span>` : ''}
+									</div>
 								</div>
 								
-								<!-- 3. Botón (Caja Pegada) -->
+								<!-- 3. Botón mejorado con icono (Mejora 3) -->
 								<div class="mt-0">
 									<button 
 										data-item-id="${item.id}" 
 										data-drag-id="${drag.id}"
-										class="auto-buy-merch-btn w-full bg-white text-black text-xs font-pixel py-2 hover:bg-pink-500 hover:text-white transition-colors">
-										COMPRAR
+										class="auto-buy-merch-btn merch-buy-btn w-full bg-white text-black text-xs font-pixel py-2 hover:bg-pink-500 hover:text-white transition-colors relative z-10">
+										<span class="btn-icon">🛒</span>COMPRAR
 									</button>
 								</div>
 							</div>`;
 					});
 
 					merchCarouselHtml = `
-						<div class="mt-4 mb-2">
+						<div class="mt-4 mb-2 merch-carousel-container">
 							<h4 class="text-sm font-pixel text-pink-400 mb-3 border-b border-gray-800 pb-1">TIENDA OFICIAL:</h4>
 							<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
 								${itemsHtml}
@@ -2530,29 +2540,35 @@ window.addEventListener('DOMContentLoaded', async () => {
 	 */
 	function createMerchCard(item, dragInfo) {
 		const card = document.createElement('div');
-		card.className = "flex flex-col transform transition-all duration-300 hover:scale-[1.02] mb-6";
+		card.className = "merch-grid-item merch-parallax flex flex-col transform transition-all duration-300 hover:scale-[1.02] mb-6 relative";
 
 		const imageUrl = item.imageUrl || `https://placehold.co/300x300/333/ccc?text=${encodeURIComponent(item.name || 'Merch')}&font=vt323`;
 		const price = (item.price || 0).toFixed(2);
 
 		card.innerHTML = `
-			<!-- 1. Imagen (Limpia) -->
-			<div class="w-full aspect-square bg-black overflow-hidden flex items-center justify-center">
-				<img src="${imageUrl}" alt="${item.name || 'Artículo'}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/300x300/333/ccc?text=Error&font=vt323';">
+			<!-- Badge (Mejora 5) -->
+			${item.badge ? `<span class="merch-badge ${item.badge}">${item.badge === 'new' ? 'NUEVO' : item.badge === 'exclusive' ? 'EXCLUSIVO' : 'LIMITADO'}</span>` : ''}
+			
+			<!-- 1. Imagen con zoom effect (Mejora 2) -->
+			<div class="w-full aspect-square bg-black overflow-hidden flex items-center justify-center relative">
+				<img src="${imageUrl}" alt="${item.name || 'Artículo'}" class="merch-image w-full h-full object-cover smooth-transition" onerror="this.onerror=null;this.src='https://placehold.co/300x300/333/ccc?text=Error&font=vt323';" onload="this.parentElement.classList.add('image-loaded')">
 			</div>
 			
-			<!-- 2. Info (Caja Pegada) -->
-			<div class="bg-black/60 backdrop-blur-md border-x border-b border-white/10 p-4">
+			<!-- 2. Info con glassmorphism (Mejora 2) -->
+			<div class="merch-info-box bg-black/60 backdrop-blur-md border-x border-b border-white/10 p-4 smooth-transition">
 				<h4 class="text-xl font-pixel text-white mb-1 truncate">${item.name || 'Artículo'}</h4>
 				<p class="text-xs text-gray-500 mb-2 font-pixel tracking-wider">${dragInfo.name}</p>
-				<p class="text-2xl font-bold text-pink-500">${price} €</p>
+				<div class="flex items-center justify-between">
+					<p class="merch-price text-2xl font-bold text-pink-500">${price} €</p>
+					${item.stock !== undefined ? `<span class="stock-counter ${item.stock < 5 ? 'low' : ''}"><span class="stock-dot"></span>${item.stock}</span>` : ''}
+				</div>
 			</div>
 			
-			<!-- 3. Botón (Caja Pegada Full Width) -->
+			<!-- 3. Botón mejorado con efecto neón (Mejora 3) -->
 			<div class="mt-0">
 				<button data-item-id="${item.id}" data-drag-id="${dragInfo.id}" 
-					class="w-full bg-white text-black font-pixel text-lg py-3 px-4 hover:bg-pink-500 hover:text-white transition-all merch-buy-btn shadow-lg">
-					COMPRAR
+					class="w-full bg-white text-black font-pixel text-lg py-3 px-4 hover:bg-pink-500 hover:text-white transition-all merch-buy-btn shadow-lg relative z-10">
+					<span class="btn-icon">🛒</span> COMPRAR
 				</button>
 			</div>
 		`;
@@ -4424,7 +4440,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 		showLoading(true);
 		try {
-			const response = await fetch('get_smtp_config.php');
+			const response = await fetch('api/get_smtp_config.php');
 			const data = await response.json();
 
 			if (data.success && data.config) {
@@ -4458,7 +4474,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 		}
 
 		try {
-			const response = await fetch(`get_smtp_config.php?t=${Date.now()}`);
+			const response = await fetch(`api/get_smtp_config.php?t=${Date.now()}`);
 			const result = await response.json();
 			console.log("SMTP Config Loaded:", result);
 
@@ -4512,7 +4528,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 		showLoading(true);
 		try {
-			const response = await fetch('save_smtp_config.php', {
+			const response = await fetch('api/save_smtp_config.php', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -4558,7 +4574,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 			// Crearemos un archivo PHP temporal o usaremos un truco.
 			// O mejor: send_email.php debería tener modo de ejecución si se llama directamente? No, es librería.
 			// Solución: Crear un endpoint test_smtp.php rápido ahora.
-			const response = await fetch('test_smtp.php', { // Asumiendo que lo creamos
+			const response = await fetch('email/test_smtp.php', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -5133,7 +5149,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 		showLoading(true, "Enviando notificación...");
 		try {
-			const response = await fetch('send_winner_notification.php', {
+			const response = await fetch('email/send_winner_notification.php', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -5731,7 +5747,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 			// NUEVO: Reenviar email automáticamente
 			showInfoModal(`Ya tienes entrada. Reenviando correo a ${userEmail}...`, false);
 
-			fetch('resend_ticket_email.php', {
+			fetch('email/resend_ticket_email.php', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

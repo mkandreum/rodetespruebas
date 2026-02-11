@@ -1,9 +1,8 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../config/security_config.php';
+startSecureSession();
 
 // --- Seguridad: Solo admin ---
-// Ajusta esto según tu lógica de sesión real.
-// Si usas un token o cookie, verifícalo aquí.
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     http_response_code(403);
     die("Acceso denegado");

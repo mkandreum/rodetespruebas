@@ -6,7 +6,7 @@
  */
 
 // Rutas
-$uploadsDir = __DIR__ . '/uploads/';
+$uploadsDir = __DIR__ . '/../../uploads/';
 $thumbnailsDir = $uploadsDir . 'thumbnails/';
 $dataFile = '/var/www/data_private/datos_app.json';
 

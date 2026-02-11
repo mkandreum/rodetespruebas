@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/security_config.php';
+require_once __DIR__ . '/../config/security_config.php';
 startSecureSession();
 header('Content-Type: application/json');
 require_once __DIR__ . '/send_email.php';

@@ -13,7 +13,7 @@ if (empty($_SESSION['is_logged_in'])) {
 echo "🛠️ REPARADOR DE MINIATURAS (JPG -> WebP)\n";
 echo "==========================================\n\n";
 
-$uploadsDir = __DIR__ . '/uploads/';
+$uploadsDir = __DIR__ . '/../../uploads/';
 $thumbnailsDir = $uploadsDir . 'thumbnails/';
 $dataFile = '/var/www/data_private/datos_app.json';
 
