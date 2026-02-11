@@ -344,4 +344,306 @@ async function generateMerchSale(drag, itemId, userName, userSurname, userEmail,
 	return saleId;
 }
 
+/**
+ * Muestra el modal final con el QR del pedido de merch.
+ */
+function showMerchQrModal(drag, item, sale, fullName) {
+	const merchQrModal = document.getElementById('merchQrModal');
+	const merchQrCode = document.getElementById('merchQrCode');
+	const downloadMerchQrBtn = document.getElementById('downloadMerchQrBtn');
+	const merchHolderName = document.getElementById('merchHolderName');
+	const merchQrLogoImg = document.getElementById('merchQrLogoImg');
+	const merchQrDragName = document.getElementById('merchQrDragName');
+	const merchQrItemName = document.getElementById('merchQrItemName');
+	const merchQrQuantity = document.getElementById('merchQrQuantity');
+
+	if (!drag || !item || !sale || !fullName || !merchQrModal || !merchQrCode || !downloadMerchQrBtn || !merchHolderName) {
+		console.error("Faltan elementos o datos para mostrar el modal QR de Merch");
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error al mostrar el QR del pedido.", true);
+		}
+		return;
+	}
+
+	try {
+		// Usar el logo de las entradas (ticketLogoUrl) si existe
+		if (merchQrLogoImg) {
+			const logoUrl = appState.ticketLogoUrl || '';
+			merchQrLogoImg.src = logoUrl;
+			merchQrLogoImg.onerror = () => { merchQrLogoImg.classList.add('hidden'); };
+			merchQrLogoImg.classList.toggle('hidden', !logoUrl);
+		}
+
+		// Mostrar nombre completo
+		merchHolderName.textContent = fullName;
+		if (merchQrDragName) merchQrDragName.textContent = `Merch de ${drag.name || 'Drag'}`;
+		if (merchQrItemName) merchQrItemName.textContent = item.name || 'Artículo';
+		if (merchQrQuantity) merchQrQuantity.textContent = `Cantidad: ${sale.quantity}`;
+
+		// Limpiar QR anterior y generar nuevo
+		merchQrCode.innerHTML = '';
+		const qrText = `MERCH_SALE_ID:${sale.saleId}\nNOMBRE:${fullName}\nDRAG:${drag.name}\nITEM:${item.name}\nQTY:${sale.quantity}\nEMAIL:${sale.email}`;
+
+		if (typeof QRCode !== 'undefined') {
+			new QRCode(merchQrCode, {
+				text: qrText,
+				width: 200, height: 200,
+				colorDark: "#000000", colorLight: "#ffffff",
+				correctLevel: QRCode.CorrectLevel.M
+			});
+		} else {
+			merchQrCode.innerHTML = '<p class="text-red-500 font-pixel">Error: QR no cargado</p>';
+		}
+
+		// Guardar datos en el botón de descarga
+		downloadMerchQrBtn.dataset.dragName = drag.name || 'drag';
+		downloadMerchQrBtn.dataset.itemName = item.name || 'item';
+		downloadMerchQrBtn.dataset.saleId = sale.saleId;
+		downloadMerchQrBtn.dataset.holderName = fullName.replace(/\s+/g, '_');
+
+		merchQrModal.classList.remove('hidden');
+
+	} catch (error) {
+		console.error("Error displaying merch QR modal:", error);
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error al mostrar el QR del pedido.", true);
+		}
+	}
+}
+
+/**
+ * Descarga el QR del pedido de merch como PNG.
+ */
+async function handleDownloadMerchQr() {
+	const merchQrToDownload = document.getElementById('merchQrToDownload');
+	const downloadMerchQrBtn = document.getElementById('downloadMerchQrBtn');
+
+	if (!merchQrToDownload || typeof html2canvas === 'undefined' || !downloadMerchQrBtn) {
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error: No se pudo iniciar la descarga (faltan elementos).", true);
+		}
+		return;
+	}
+
+	const dragName = downloadMerchQrBtn.dataset.dragName || 'drag';
+	const itemName = downloadMerchQrBtn.dataset.itemName || 'item';
+	const holderName = downloadMerchQrBtn.dataset.holderName || 'comprador';
+	const saleIdShort = (downloadMerchQrBtn.dataset.saleId || crypto.randomUUID()).substring(0, 8);
+
+	if (typeof showLoading === 'function') showLoading(true);
+	try {
+		const canvas = await html2canvas(merchQrToDownload, { scale: 2, backgroundColor: "#000000" });
+		const dataUrl = canvas.toDataURL('image/png');
+		const link = document.createElement('a');
+		link.href = dataUrl;
+
+		const safeDragName = dragName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+		const safeItemName = itemName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+		const safeHolderName = holderName.replace(/[^a-z0-9_]/gi, '').toLowerCase();
+
+		link.download = `pedido_merch_${safeHolderName}_${safeDragName}_${safeItemName}_${saleIdShort}.png`;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("PEDIDO DESCARGADO (PNG).<br>¡Pásaselo por Instagram a la drag!", false);
+		}
+
+	} catch (error) {
+		console.error("Error downloading merch QR image:", error);
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error al descargar la imagen del pedido.", true);
+		}
+	} finally {
+		if (typeof showLoading === 'function') showLoading(false);
+	}
+}
+
+/**
+ * Renderiza la lista de ventas de merch para una drag específica (o 'web')
+ */
+function renderMerchSalesListForDrag(dragId) {
+	const merchSalesListContent = document.getElementById('merchSalesListContent');
+	if (!merchSalesListContent) return;
+
+	if (typeof clearDynamicListListeners === 'function') {
+		clearDynamicListListeners('merchSalesListForDrag');
+	}
+	merchSalesListContent.innerHTML = '';
+
+	const salesForDrag = (allMerchSales || [])
+		.filter(s => s.dragId === dragId || (dragId === 'web' && s.dragId === 'web'))
+		.sort((a, b) => (b.saleDate && a.saleDate) ? new Date(b.saleDate) - new Date(a.saleDate) : 0);
+
+	if (salesForDrag.length === 0) {
+		merchSalesListContent.innerHTML = '<p class="text-gray-400 text-center font-pixel">NO HAY PEDIDOS REGISTRADOS.</p>';
+		return;
+	}
+
+	let listHtml = `<ul class="text-left space-y-4">`;
+	salesForDrag.forEach(sale => {
+		try {
+			const isPending = sale.status === 'Pending';
+			const statusText = isPending ? 'PENDIENTE' : 'ENTREGADO';
+			const statusColor = isPending ? 'text-yellow-400' : 'text-green-400';
+			const totalAmount = ((sale.itemPrice || 0) * (sale.quantity || 0)).toFixed(2);
+			const saleDateStr = sale.saleDate ? new Date(sale.saleDate).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : 'Fecha N/A';
+			const saleIdShort = (sale.saleId || 'N/A').substring(0, 8);
+			const buyerName = `${sale.nombre || ''} ${sale.apellidos || ''}`.trim() || 'Nombre N/A';
+
+			const buttonHtml = isPending
+				? `<div class="flex flex-col sm:flex-row gap-2">
+					<button data-sale-id="${sale.saleId}" class="mark-merch-delivered-btn bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded-none text-sm font-pixel">MARCAR ENTREGADO</button>
+					<button data-sale-id="${sale.saleId}" class="delete-merch-order-btn bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded-none text-sm font-pixel">BORRAR</button>
+				   </div>`
+				: `<div class="flex flex-col sm:flex-row gap-2 items-center">
+					<span class="text-gray-500 px-3 py-1 text-sm font-pixel">CONFIRMADO</span>
+					<button data-sale-id="${sale.saleId}" class="delete-merch-order-btn bg-red-900 hover:bg-red-700 text-white px-3 py-1 rounded-none text-sm font-pixel text-xs">BORRAR</button>
+				   </div>`;
+
+			listHtml += `
+				<li class="p-3 bg-gray-800 border border-gray-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+					<div class="min-w-0 flex-grow">
+						<span class="font-pixel text-lg text-white block truncate" title="${sale.itemName || ''}">${sale.itemName || 'Artículo'} x ${sale.quantity || '?'}</span>
+						<span class="text-sm ${statusColor} font-bold block">${statusText} (${totalAmount} €)</span>
+						<span class="text-xs text-gray-400 block break-words" title="${buyerName}">${buyerName}</span>
+						<span class="text-xs text-gray-500 block break-all" title="${sale.email || ''}">Email: ${sale.email || 'N/A'}</span>
+						<span class="text-xs text-gray-500 block">ID: ${saleIdShort}... (${saleDateStr})</span>
+					</div>
+					<div class="flex-shrink-0 mt-2 sm:mt-0">
+						${buttonHtml}
+					</div>
+				</li>
+			`;
+		} catch (e) {
+			console.error(`Error renderizando venta ${sale?.saleId}:`, e);
+		}
+	});
+	listHtml += '</ul>';
+	merchSalesListContent.innerHTML = listHtml;
+
+	// Añadir listeners
+	if (typeof addTrackedListener === 'function') {
+		merchSalesListContent.querySelectorAll('.mark-merch-delivered-btn').forEach(btn => {
+			addTrackedListener(btn, 'click', handleMarkMerchDeliveredFromList);
+		});
+		merchSalesListContent.querySelectorAll('.delete-merch-order-btn').forEach(btn => {
+			addTrackedListener(btn, 'click', handleDeleteMerchOrder);
+		});
+	}
+}
+
+/**
+ * Marca un pedido de merch como entregado desde la lista
+ */
+async function handleMarkMerchDeliveredFromList(e) {
+	const saleId = e.currentTarget.dataset.saleId;
+	if (!saleId || !allMerchSales) return;
+
+	const saleIndex = allMerchSales.findIndex(s => s.saleId === saleId);
+	if (saleIndex === -1) {
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error: Pedido no encontrado.", true);
+		}
+		return;
+	}
+	if (allMerchSales[saleIndex].status === 'Delivered') {
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Este pedido ya está marcado como entregado.", false);
+		}
+		return;
+	}
+
+	if (typeof showLoading === 'function') showLoading(true);
+	try {
+		allMerchSales[saleIndex].status = 'Delivered';
+		if (typeof saveMerchSalesState === 'function') {
+			await saveMerchSalesState();
+		}
+
+		// Re-renderizar la lista actual y los resúmenes
+		const dragId = allMerchSales[saleIndex].dragId;
+		renderMerchSalesListForDrag(dragId);
+
+		if (dragId === 'web') {
+			if (typeof renderWebMerchSalesSummary === 'function') {
+				renderWebMerchSalesSummary();
+			}
+		} else {
+			if (typeof renderDragMerchSalesSummary === 'function') {
+				renderDragMerchSalesSummary();
+			}
+		}
+
+		if (typeof showInfoModal === 'function') {
+			showInfoModal(`¡PEDIDO ${saleId.substring(0, 8)} CONFIRMADO COMO ENTREGADO!`, false);
+		}
+	} catch (error) {
+		console.error("Error marking merch delivered:", error);
+		allMerchSales[saleIndex].status = 'Pending'; // Revertir
+		renderMerchSalesListForDrag(allMerchSales[saleIndex].dragId);
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error al confirmar la entrega: " + error.message, true);
+		}
+	} finally {
+		if (typeof showLoading === 'function') showLoading(false);
+	}
+}
+
+/**
+ * Elimina un pedido de merch (por error o cancelación)
+ */
+async function handleDeleteMerchOrder(e) {
+	const saleId = e.currentTarget.dataset.saleId;
+	if (!saleId || !allMerchSales) return;
+
+	if (!confirm("¿Seguro que quieres ELIMINAR este pedido permanentemente? Esta acción es irreversible.")) {
+		return;
+	}
+
+	const saleIndex = allMerchSales.findIndex(s => s.saleId === saleId);
+	if (saleIndex === -1) {
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error: Pedido no encontrado.", true);
+		}
+		return;
+	}
+
+	if (typeof showLoading === 'function') showLoading(true);
+	try {
+		const dragId = allMerchSales[saleIndex].dragId;
+		
+		// Eliminar del array
+		allMerchSales.splice(saleIndex, 1);
+		if (typeof saveMerchSalesState === 'function') {
+			await saveMerchSalesState();
+		}
+
+		// Re-renderizar
+		renderMerchSalesListForDrag(dragId);
+		
+		if (dragId === 'web') {
+			if (typeof renderWebMerchSalesSummary === 'function') {
+				renderWebMerchSalesSummary();
+			}
+		} else {
+			if (typeof renderDragMerchSalesSummary === 'function') {
+				renderDragMerchSalesSummary();
+			}
+		}
+
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Pedido eliminado correctamente.", false);
+		}
+	} catch (err) {
+		console.error("Error eliminando pedido:", err);
+		if (typeof showInfoModal === 'function') {
+			showInfoModal("Error al eliminar el pedido.", true);
+		}
+	} finally {
+		if (typeof showLoading === 'function') showLoading(false);
+	}
+}
+
 
