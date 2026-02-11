@@ -31,7 +31,7 @@ async function handleEmailSubmit(e) {
 	const selectedEventId = parseInt(emailForm['event-select'].value, 10);
 	const userEmail = emailForm['email'].value.trim().toLowerCase();
 	const userName = emailForm['name'].value.trim();
-	const userPhone = emailForm['phone'].value.trim();
+	const userSurname = emailForm['surname'].value.trim();
 	const quantity = parseInt(emailForm['quantity'].value, 10);
 
 	// Validaciones
@@ -40,12 +40,8 @@ async function handleEmailSubmit(e) {
 		showInfoModal("POR FAVOR, INTRODUCE UN EMAIL VÁLIDO.", true);
 		return;
 	}
-	if (!userName) {
-		showInfoModal("POR FAVOR, INTRODUCE TU NOMBRE.", true);
-		return;
-	}
-	if (!userPhone) {
-		showInfoModal("POR FAVOR, INTRODUCE TU TELÉFONO.", true);
+	if (!userName || !userSurname) {
+		showInfoModal("POR FAVOR, INTRODUCE TU NOMBRE Y APELLIDOS.", true);
 		return;
 	}
 	if (quantity < 1 || quantity > 10) {
@@ -67,80 +63,48 @@ async function handleEmailSubmit(e) {
 		return;
 	}
 
-	showLoading(true, "Procesando entrada...");
-
-	try {
-		// Generar ID único para la entrada
-		const ticketId = `${selectedEventId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-		// Crear objeto de entrada
-		const ticketEntry = {
-			ticketId,
-			eventId: selectedEventId,
-			eventName: event.name,
-			userName,
-			userEmail,
-			userPhone,
-			quantity,
-			purchaseDate: new Date().toISOString(),
-			status: 'active'
-		};
-
-		// Añadir a array
-		allTickets.push(ticketEntry);
-
-		// Actualizar contador
-		syncTicketCounters();
-
-		// Guardar en servidor
-		const saveResult = await saveTicketState();
-		if (!saveResult.ok) {
-			allTickets.pop(); // Revertir si falla
-			showLoading(false);
-			return;
-		}
-
-		// Enviar email
-		const emailResponse = await fetch('email/send_email.php', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				eventId: selectedEventId,
-				ticketId,
-				userName,
-				userEmail,
-				userPhone,
-				quantity,
-				eventName: event.name
-			})
-		});
-
-		const emailData = await emailResponse.json();
-		showLoading(false);
-
-		if (emailData.ok) {
-			showInfoModal("¡ENTRADA CONFIRMADA! Revisa tu email para más información.", false, () => {
-				emailForm.reset();
-				renderPublicEvents(appState.events);
-			});
-		} else {
-			showInfoModal(`Entrada creada, pero error al enviar email: ${emailData.message}`, true);
-		}
-
-	} catch (error) {
-		showLoading(false);
-		console.error("Error procesando entrada:", error);
-		showInfoModal(`Error: ${error.message}`, true);
-	}
+	// Llamar a generateTicket que maneja todo el flujo
+	await generateTicket(selectedEventId, userName, userSurname, userEmail, quantity);
 }
 
 /**
- * Maneja la descarga del ticket en PDF.
+ * Descarga el contenido del modal del ticket como imagen PNG.
+ * Extraído de app-old-broken.js líneas 5987-6018
  */
 async function handleDownloadTicket() {
-	// Esta función requiere que haya un ticket activo en la sesión
-	// La implementación dependerá de cómo se gestione en tu app
-	showInfoModal("Funcionalidad de descarga de ticket a implementar.", false);
+	const ticketToDownload = document.getElementById('ticketToDownload');
+	const downloadTicketBtn = document.getElementById('downloadTicketBtn');
+
+	if (!ticketToDownload || typeof html2canvas === 'undefined' || !downloadTicketBtn) {
+		showInfoModal("Error: No se pudo iniciar la descarga (faltan elementos).", true); return;
+	}
+
+	const eventName = downloadTicketBtn.dataset.eventName || 'evento';
+	const holderName = downloadTicketBtn.dataset.holderName || 'comprador'; // Nuevo
+	const safeEventName = eventName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+	const safeHolderName = holderName.replace(/[^a-z0-9_]/gi, '').toLowerCase(); // Permitir guión bajo
+
+	showLoading(true);
+	try {
+		const canvas = await html2canvas(ticketToDownload, { scale: 2, backgroundColor: "#000000" }); // Fondo negro
+		const dataUrl = canvas.toDataURL('image/png');
+		const link = document.createElement('a');
+		link.href = dataUrl;
+		// MODIFICADO: Añadir nombre al archivo
+		link.download = `entrada_rodetes_${safeHolderName}_${safeEventName}.png`;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		// No revokeObjectURL para data URLs
+
+		showLoading(false);
+		// No mostramos modal de éxito aquí, ya se mostró al generar/recuperar el ticket.
+
+	} catch (error) {
+		console.error("Error downloading ticket image:", error);
+		showLoading(false);
+		showInfoModal("Error al descargar la imagen de la entrada.", true);
+	}
 }
 
 /**
@@ -163,6 +127,262 @@ function getTicketById(ticketId) {
 function isValidEmail(email) {
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	return emailRegex.test(email);
+}
+
+/**
+ * Genera un ticket nuevo y lo guarda.
+ * Extraído de app-old-broken.js líneas 5814-5895
+ */
+async function generateTicket(eventId, userName, userSurname, userEmail, quantity) {
+	if (!appState || !appState.events || !allTickets) return; // Comprobación robusta
+
+	const eventIndex = appState.events.findIndex(ev => ev.id === eventId);
+	if (eventIndex === -1) {
+		showInfoModal("Error crítico: Evento no encontrado al generar ticket.", true); return;
+	}
+	const event = appState.events[eventIndex];
+
+	let ticketId = null; // <-- CORRECCIÓN: Declarar ticketId aquí para scope
+
+	showLoading(true);
+	try {
+		ticketId = crypto.randomUUID(); // Asignar el ID
+		const fullName = `${userName} ${userSurname}`; // Combinar nombre
+
+		// Crear objeto del nuevo ticket
+		const newTicket = {
+			ticketId: ticketId,
+			eventId: event.id,
+			// NUEVO: Guardar nombre y apellidos
+			nombre: userName,
+			apellidos: userSurname,
+			email: userEmail,
+			quantity: quantity
+		};
+		if (!Array.isArray(allTickets)) allTickets = []; // Asegurar array
+		allTickets.push(newTicket); // Añadir al array global de tickets ANTES de calcular el nuevo total
+
+		// Actualizar contador 'ticketsSold' en appState.events de forma segura
+		// Recalcular la suma total de cantidades para este evento DESPUÉS de añadir el nuevo ticket
+		const newTotalQuantitySold = allTickets
+			.filter(t => t.eventId === eventId)
+			.reduce((sum, t) => sum + (t.quantity || 0), 0);
+
+		appState.events[eventIndex].ticketsSold = newTotalQuantitySold; // Sobrescribir con la suma correcta
+		currentEvents = [...appState.events]; // Actualizar copia local
+
+		// CORRECCIÓN: Guardar SÓLO el estado de los tickets (saveTicketState).
+		// Un usuario normal NO PUEDE llamar a saveAppState() (que usa save.php)
+		// y eso causaba el error 403 Forbidden.
+		await saveTicketState();
+
+		// Re-renderizar UI si el admin está logueado
+		if (isLoggedIn) {
+			renderAdminEvents(currentEvents);
+			renderGiveawayEvents(currentEvents);
+		}
+		// Re-renderizar UI pública
+		renderPublicEvents(currentEvents);
+		renderHomeEvents(currentEvents);
+
+		console.log(`Ticket NUEVO generado: ${quantity} para ${event.name} -> ${fullName} (${userEmail}) (ID: ${ticketId})`);
+
+		// Mostrar el modal del QR
+		// MODIFICADO: Pasar nombre completo al mostrar modal
+		displayTicketModal(event, ticketId, userEmail, quantity, fullName);
+
+	} catch (error) {
+		console.error("Error generando ticket:", error);
+
+		// CORRECCIÓN: El 'ticketId' ahora es accesible aquí
+		if (ticketId) { // Solo intentar quitar si se generó un ID
+			const addedTicketIndex = allTickets.findIndex(t => t.ticketId === ticketId);
+			if (addedTicketIndex > -1) {
+				allTickets.splice(addedTicketIndex, 1); // Quitar el ticket si falló el guardado
+				// Recalcular contador si se quita el ticket? Sí, por consistencia local.
+				const eventIndexFallback = appState.events.findIndex(ev => ev.id === eventId);
+				if (eventIndexFallback > -1) {
+					const fallbackTotal = allTickets
+						.filter(t => t.eventId === eventId)
+						.reduce((sum, t) => sum + (t.quantity || 0), 0);
+					appState.events[eventIndexFallback].ticketsSold = fallbackTotal;
+					currentEvents = [...appState.events];
+				}
+			}
+		}
+		showInfoModal("Error al generar tu entrada. Inténtalo de nuevo más tarde.", true);
+	} finally {
+		showLoading(false);
+	}
+}
+
+/**
+ * Muestra el modal con los detalles del ticket y el QR.
+ * Extraído de app-old-broken.js líneas 5906-5980
+ */
+function displayTicketModal(event, ticketId, userEmail, quantity, fullName) {
+	const ticketModal = document.getElementById('ticketModal');
+	const ticketQrCode = document.getElementById('ticketQrCode');
+	const downloadTicketBtn = document.getElementById('downloadTicketBtn');
+	const ticketHolderName = document.getElementById('ticketHolderName');
+	const ticketEventName = document.getElementById('ticketEventName');
+	const ticketEventDate = document.getElementById('ticketEventDate');
+	const ticketQuantityDetails = document.getElementById('ticketQuantityDetails');
+	const loadingModal = document.getElementById('loadingModal');
+
+	if (!event || !ticketId || !userEmail || quantity <= 0 || !fullName || !ticketModal || !ticketQrCode || !downloadTicketBtn || !ticketHolderName) {
+		console.error("Faltan datos o elementos para mostrar el modal del ticket.");
+		showInfoModal("Error al mostrar los detalles de tu entrada.", true);
+		if (loadingModal && !loadingModal.classList.contains('hidden')) showLoading(false); // Asegurar quitar loading si falla aquí
+		return;
+	}
+
+	try {
+		// Referencias a los nuevos elementos del cartel
+		const ticketEventPosterContainer = document.getElementById('ticket-event-poster-container');
+		const ticketEventPosterImg = document.getElementById('ticket-event-poster-img');
+
+		// Configurar logo del ticket
+		const ticketLogoImg = document.getElementById('ticket-logo-img');
+		if (ticketLogoImg) {
+			const logoUrl = appState.ticketLogoUrl || '';
+			ticketLogoImg.src = logoUrl;
+			ticketLogoImg.onerror = () => { ticketLogoImg.classList.add('hidden'); };
+			ticketLogoImg.classList.toggle('hidden', !logoUrl);
+		}
+
+		// --- NUEVO: Cartel del evento ---
+		if (ticketEventPosterImg && ticketEventPosterContainer) {
+			const posterUrl = event.posterImageUrl || '';
+			if (posterUrl) {
+				ticketEventPosterImg.src = posterUrl;
+				ticketEventPosterImg.style.display = 'block';
+				// Aseguramos que el contenedor esté visible y limpio de la clase 'hidden'
+				ticketEventPosterContainer.classList.remove('hidden');
+			} else {
+				ticketEventPosterImg.src = '';
+				ticketEventPosterImg.style.display = 'none';
+				ticketEventPosterContainer.classList.add('hidden');
+			}
+		}
+		// --- FIN NUEVO ---
+
+		// Rellenar detalles del evento y nombre
+		const eventDate = event.date ? new Date(event.date).toLocaleString('es-ES', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Fecha N/A';
+		// NUEVO: Mostrar nombre completo
+		ticketHolderName.textContent = fullName;
+		if (ticketEventName) ticketEventName.textContent = event.name || 'Evento';
+		if (ticketEventDate) ticketEventDate.textContent = eventDate;
+		if (ticketQuantityDetails) ticketQuantityDetails.textContent = `Cantidad: ${quantity}`;
+
+		// Generar QR
+		ticketQrCode.innerHTML = ''; // Limpiar anterior
+		// MODIFICADO: Añadir NOMBRE al QR text
+		const qrText = `TICKET_ID:${ticketId}`;
+
+		if (typeof QRCode !== 'undefined') {
+			new QRCode(ticketQrCode, {
+				text: qrText,
+				width: 200, height: 200,
+				colorDark: "#000000", colorLight: "#ffffff",
+				correctLevel: QRCode.CorrectLevel.M // Nivel M
+			});
+		} else {
+			ticketQrCode.innerHTML = '<p class="text-red-500 font-pixel">Error: QR no cargado</p>';
+		}
+
+		// Configurar botón de descarga
+		downloadTicketBtn.dataset.eventName = event.name || 'evento'; // Para nombre archivo
+		// NUEVO: Guardar nombre para nombre archivo
+		downloadTicketBtn.dataset.holderName = fullName.replace(/\s+/g, '_'); // Reemplazar espacios
+
+		ticketModal.classList.remove('hidden'); // Mostrar modal
+
+	} catch (error) {
+		console.error("Error displaying ticket modal:", error);
+		showInfoModal("Error al mostrar los detalles de tu entrada.", true);
+		if (loadingModal && !loadingModal.classList.contains('hidden')) showLoading(false); // Asegurar quitar loading
+	}
+}
+
+/**
+ * Elimina un ticket del sistema.
+ * Extraído de app-old-broken.js líneas 4888-4959
+ */
+async function handleDeleteTicket(e) {
+	const ticketId = e.target.dataset.ticketId;
+	const ticketListModal = document.getElementById('ticketListModal');
+	const ticketListTitle = document.getElementById('ticketListTitle');
+
+	if (!ticketId || !allTickets || !appState || !appState.events) return;
+
+	const ticketIndex = allTickets.findIndex(t => t.ticketId === ticketId);
+	if (ticketIndex === -1) {
+		showInfoModal("Error: Entrada no encontrada para eliminar.", true); return;
+	}
+
+	const ticketToDelete = allTickets[ticketIndex];
+	const eventId = ticketToDelete.eventId;
+	const quantityToDelete = ticketToDelete.quantity || 0;
+	const email = ticketToDelete.email || 'esta entrada';
+
+	// Simulación de confirmación
+	console.warn(`Simulando confirmación para eliminar ticket: ${email} (ID: ${ticketId})`);
+	showLoading(true);
+	try {
+		// Eliminar ticket de allTickets
+		allTickets.splice(ticketIndex, 1);
+
+		// Actualizar contador ticketsSold en appState.events
+		const eventIndex = appState.events.findIndex(ev => ev.id === eventId);
+		if (eventIndex > -1) {
+			// Asegurar que el contador existe y restar cantidad
+			if (typeof appState.events[eventIndex].ticketsSold === 'number') {
+				appState.events[eventIndex].ticketsSold = Math.max(0, appState.events[eventIndex].ticketsSold - quantityToDelete); // Evitar negativos
+			} else {
+				appState.events[eventIndex].ticketsSold = 0; // Si no existía, poner a 0
+			}
+			currentEvents = [...appState.events]; // Actualizar copia local
+		} else {
+			console.warn(`Evento ${eventId} no encontrado al intentar actualizar contador tras borrar ticket ${ticketId}.`);
+		}
+
+		// Guardar AMBOS estados
+		await Promise.all([
+			saveAppState(),
+			saveTicketState()
+		]);
+
+		showLoading(false);
+		showInfoModal(`ENTRADA DE ${email} ELIMINADA.`, false);
+
+		// Re-renderizar lista de tickets en el modal si sigue abierto
+		if (ticketListModal && !ticketListModal.classList.contains('hidden') && ticketListTitle) {
+			// Reconstruir título para obtener ID del evento actual
+			const titleText = ticketListTitle.textContent || '';
+			const currentEventInModal = appState.events.find(ev => titleText.includes(ev.name || `Evento ${ev.id}`)); // Intenta encontrar evento por nombre en título
+			if (currentEventInModal && currentEventInModal.id === eventId) {
+				// Si el modal abierto es del evento afectado, recargar su contenido
+				handleViewTickets({ target: { dataset: { eventId: eventId.toString() } } }); // Simular click en "Ver Lista"
+			} else {
+				// Si no se puede determinar o es de otro evento, cerrar modal por seguridad
+				closeModal('ticket-list-modal');
+			}
+		}
+		// Re-renderizar lista de eventos admin (para actualizar contador)
+		renderAdminEvents(currentEvents);
+		// Re-renderizar lista pública/home (para actualizar contador visual si afecta botón AGOTADO)
+		renderPublicEvents(currentEvents);
+		renderHomeEvents(currentEvents);
+		// Re-renderizar sorteo
+		renderGiveawayEvents(currentEvents);
+
+	} catch (error) {
+		showLoading(false);
+		console.error("Error deleting ticket:", error);
+		// Revertir cambios en memoria? Complicado. Mostrar error.
+		showInfoModal("Error al eliminar la entrada: " + error.message, true);
+	}
 }
 
 
