@@ -251,6 +251,45 @@ function renderDragList() {
 
 			const imageUrl = drag.coverImageUrl || `https://placehold.co/400x400/000/fff?text=${encodeURIComponent(drag.name || 'Drag')}&font=vt323`;
 			const galleryCount = drag.galleryImages?.length || 0;
+			const merchItems = drag.merchItems || [];
+			const merchCount = merchItems.length;
+
+			// Construcción del Carousel de Merch
+			let merchCarouselHtml = '';
+			if (merchCount > 0) {
+				let itemsHtml = '';
+				merchItems.forEach(item => {
+					const itemImage = item.imageUrl || `https://placehold.co/200x200/000/fff?text=${encodeURIComponent(item.name || 'Item')}&font=vt323`;
+					const price = (parseFloat(item.price) || 0).toFixed(2);
+					itemsHtml += `
+						<div class="merch-carousel-item flex-shrink-0 w-36 bg-black border border-gray-700 p-2 snap-center flex flex-col relative">
+							${item.badge ? `<span class="merch-badge ${item.badge}">${item.badge === 'new' ? 'NUEVO' : item.badge === 'exclusive' ? 'EXCLUSIVO' : 'LIMITADO'}</span>` : ''}
+							<div class="h-24 w-full bg-gray-900 mb-2 overflow-hidden flex items-center justify-center relative">
+								<img src="${itemImage}" alt="${item.name}" class="merch-image object-cover w-full h-full" onerror="this.src='https://placehold.co/200x200/000/fff?text=Error&font=vt323'" onload="this.parentElement.classList.add('image-loaded')">
+							</div>
+							<p class="text-white text-xs font-pixel truncate mb-1" title="${item.name}">${item.name}</p>
+							<div class="flex items-center justify-between mb-2">
+								<p class="merch-price text-pink-500 font-bold text-sm">${price}€</p>
+								${item.stock !== undefined ? `<span class="stock-counter ${item.stock < 5 ? 'low' : ''}"><span class="stock-dot"></span>${item.stock}</span>` : ''}
+							</div>
+							<button 
+								data-item-id="${item.id}" 
+								data-drag-id="${drag.id}"
+								class="auto-buy-merch-btn merch-buy-btn w-full bg-white text-black text-xs font-pixel py-1 hover:bg-pink-500 hover:text-white transition-colors mt-auto rounded-none border border-gray-400 relative z-10">
+								<span class="btn-icon">🛒</span>COMPRAR
+							</button>
+						</div>`;
+				});
+
+				merchCarouselHtml = `
+					<div class="mt-4 mb-2 merch-carousel-container relative">
+						<h4 class="text-sm font-pixel text-pink-400 mb-2 border-b border-gray-800 pb-1">TIENDA OFICIAL:</h4>
+						<div class="merch-carousel flex gap-3 overflow-x-auto pb-4 snap-x">
+							${itemsHtml}
+						</div>
+					</div>`;
+			}
+
 			const instagramBtnHtml = drag.instagramHandle
 				? `<a href="https://www.instagram.com/${drag.instagramHandle}" target="_blank" rel="noopener noreferrer" class="drag-instagram-btn w-full bg-gray-700 text-white font-pixel text-lg py-2 px-4 rounded-none border border-gray-600 hover:bg-gray-600 transition-colors duration-300 flex items-center justify-center gap-2">
 					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
@@ -273,6 +312,9 @@ function renderDragList() {
 						<button disabled class="w-full bg-gray-800 text-gray-500 font-pixel text-lg py-2 px-4 rounded-none border border-gray-700 cursor-not-allowed ${galleryCount > 0 ? 'hidden' : ''}">
 							GALERÍA (0)
 						</button>
+						
+						${merchCarouselHtml}
+						
 						${instagramBtnHtml}
 					</div>
 				</div>
@@ -286,6 +328,11 @@ function renderDragList() {
 	});
 
 	dragListContainer.querySelectorAll('.drag-gallery-btn').forEach(btn => addTrackedListener(btn, 'click', (e) => renderDragGalleryImages(parseInt(e.currentTarget.dataset.dragId, 10))));
+	
+	// Añadir listeners para botones de compra de merch
+	if (typeof handleMerchBuyClick === 'function') {
+		dragListContainer.querySelectorAll('.auto-buy-merch-btn').forEach(btn => addTrackedListener(btn, 'click', handleMerchBuyClick));
+	}
 
 	if (typeof observeRevealElements === 'function') observeRevealElements();
 }
