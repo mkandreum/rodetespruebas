@@ -2587,18 +2587,18 @@ window.addEventListener('DOMContentLoaded', async () => {
 			merchItems.forEach(item => {
 				try {
 					const card = document.createElement('div');
-					card.className = "bg-gray-800 border border-white rounded-none p-4 flex flex-col";
+					card.className = "bg-gray-800 border border-white rounded-none p-3 md:p-4 flex flex-col h-full";
 
 					const imageUrl = item.imageUrl || `https://placehold.co/300x300/333/ccc?text=${encodeURIComponent(item.name || 'Merch')}&font=vt323`;
 					const price = (item.price || 0).toFixed(2);
 
 					card.innerHTML = `
-							<div class="w-full h-48 bg-black flex items-center justify-center mb-4 border border-gray-600 overflow-hidden">
+							<div class="w-full aspect-square bg-black flex items-center justify-center mb-3 md:mb-4 border border-gray-600 overflow-hidden">
 								<img src="${imageUrl}" alt="${item.name || 'Artículo'}" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/300x300/333/ccc?text=Error&font=vt323';">
 							</div>
-							<h4 class="text-xl font-pixel text-white mb-1 truncate">${item.name || 'Artículo sin nombre'}</h4>
-							<p class="text-2xl font-bold text-white mb-4">${price} €</p>
-							<button data-item-id="${item.id}" data-drag-id="${drag.id}" class="mt-auto bg-white text-black font-pixel text-lg py-2 px-4 rounded-none border border-gray-400 hover:bg-gray-300 merch-buy-btn">
+							<h4 class="text-lg md:text-xl font-pixel text-white mb-1 truncate">${item.name || 'Artículo sin nombre'}</h4>
+							<p class="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">${price} €</p>
+							<button data-item-id="${item.id}" data-drag-id="${drag.id}" class="mt-auto bg-white text-black font-pixel text-sm md:text-lg py-2 px-3 md:px-4 rounded-none border border-gray-400 hover:bg-gray-300 merch-buy-btn">
 								COMPRAR
 							</button>
 						`;
