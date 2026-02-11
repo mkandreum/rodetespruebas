@@ -137,6 +137,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 		}
 	}
 
+	// Update global currentEvents (declared in pages.js) with loaded events
 	currentEvents = [...(appState.events || [])];
 
 	// Intersection Observer for scroll reveal animations
