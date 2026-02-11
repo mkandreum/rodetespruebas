@@ -3,6 +3,10 @@
  * Renderizado de páginas públicas (home, eventos, countdown, promos)
  */
 
+// DOM element references
+const homeEventListContainer = document.getElementById('home-events-container');
+const eventListContainer = document.getElementById('event-list-container');
+
 let countdownInterval = null;
 let currentEvents = [];
 
@@ -341,6 +345,164 @@ function startCountdownTimer() {
 
 	updateTimer();
 	countdownInterval = setInterval(updateTimer, 1000);
+}
+
+/**
+ * Renderiza el banner de vídeo en la página de inicio.
+ */
+function renderBannerVideo() {
+	const homeBannerContainer = document.getElementById('home-banner-container');
+	if (!homeBannerContainer || !appState) return;
+	homeBannerContainer.innerHTML = '';
+
+	const url = appState.bannerVideoUrl || "";
+	console.log("Rendering Banner with URL:", url);
+
+	if (!url) {
+		homeBannerContainer.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-black text-gray-500 font-pixel">Banner no configurado</div>';
+		return;
+	}
+
+	const isImageUrl = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url) || url.startsWith('uploads/') || url.startsWith('data:image');
+	const isVideoUrl = /\.(mp4|webm|ogv)$/i.test(url) || (url.startsWith('uploads/') && !isImageUrl) || url.startsWith('data:video');
+	
+	// Validate embed URLs more securely by checking the hostname exactly
+	let isEmbedUrl = false;
+	if (url.includes('/embed/') || url.includes('youtube') || url.includes('youtu.be') || url.includes('vimeo')) {
+		try {
+			const urlObj = new URL(url);
+			const hostname = urlObj.hostname.toLowerCase();
+			// Check if hostname exactly matches or ends with trusted domain
+			isEmbedUrl = hostname === 'youtube.com' || hostname.endsWith('.youtube.com') ||
+			             hostname === 'youtu.be' || hostname.endsWith('.youtu.be') ||
+			             hostname === 'vimeo.com' || hostname.endsWith('.vimeo.com') ||
+			             hostname === 'youtube-nocookie.com' || hostname.endsWith('.youtube-nocookie.com');
+		} catch (e) {
+			isEmbedUrl = false;
+		}
+	}
+
+	let element;
+	let fallbackDiv;
+	const setupFallback = (elementType) => {
+		fallbackDiv = document.createElement('div');
+		fallbackDiv.className = "absolute inset-0 flex items-center justify-center bg-black text-gray-500 font-pixel text-lg";
+		fallbackDiv.textContent = `Cargando ${elementType}...`;
+		homeBannerContainer.appendChild(fallbackDiv);
+		let loadTimeout;
+
+		const showFallbackMessage = (message) => {
+			if (fallbackDiv) {
+				fallbackDiv.textContent = message;
+				fallbackDiv.style.display = 'flex';
+			}
+			clearTimeout(loadTimeout);
+		};
+		const hideFallbackMessage = () => {
+			if (fallbackDiv) fallbackDiv.style.display = 'none';
+			clearTimeout(loadTimeout);
+		};
+
+		loadTimeout = setTimeout(() => {
+			if (fallbackDiv && fallbackDiv.style.display !== 'none') {
+				showFallbackMessage(`Error: Timeout al cargar ${elementType}.`);
+			}
+		}, 10000);
+
+		return { showFallbackMessage, hideFallbackMessage };
+	};
+
+	try {
+		if (isImageUrl) {
+			const { showFallbackMessage, hideFallbackMessage } = setupFallback('imagen');
+			element = document.createElement('img');
+			element.src = url;
+			element.alt = "Banner Principal";
+			element.className = "absolute top-0 left-0 w-full h-full object-cover border-0";
+			element.onload = hideFallbackMessage;
+			element.onerror = () => showFallbackMessage('Error al cargar imagen.');
+		} else if (isVideoUrl) {
+			const { showFallbackMessage, hideFallbackMessage } = setupFallback('vídeo');
+			element = document.createElement('video');
+			element.src = url;
+			element.className = "absolute top-0 left-0 w-full h-full object-cover border-0";
+			element.autoplay = true; element.loop = true; element.muted = true; element.playsInline = true;
+			element.onloadeddata = hideFallbackMessage;
+			element.onerror = (e) => {
+				console.error('Video Error:', e, 'Source:', element.src.substring(0, 50) + '...');
+				let errorMsg = 'Error al cargar vídeo';
+				if (element.error) {
+					switch (element.error.code) {
+						case MediaError.MEDIA_ERR_ABORTED: errorMsg += ' (Abortado)'; break;
+						case MediaError.MEDIA_ERR_NETWORK: errorMsg += ' (Error de red)'; break;
+						case MediaError.MEDIA_ERR_DECODE: errorMsg += ' (Error de decodificación)'; break;
+						case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED: errorMsg += ' (Formato no soportado)'; break;
+						default: errorMsg += ` (Código ${element.error.code})`; break;
+					}
+				}
+				showFallbackMessage(errorMsg);
+			};
+		} else if (isEmbedUrl) {
+			element = document.createElement('iframe');
+			let embedUrl = url;
+			if (url.includes('youtube.com/watch')) {
+				const videoId = new URL(url).searchParams.get('v');
+				if (videoId) embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`;
+			} else if (url.includes('youtu.be/')) {
+				const videoId = new URL(url).pathname.substring(1);
+				if (videoId) embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`;
+			}
+			element.src = embedUrl;
+			element.className = "absolute top-0 left-0 w-full h-full border-0";
+			element.style.border = 'none';
+			element.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+			element.setAttribute('allowfullscreen', '');
+		} else {
+			homeBannerContainer.innerHTML = `<div class="absolute inset-0 flex items-center justify-center bg-black text-yellow-500 font-pixel">Tipo de URL no soportado: ${url.substring(0, 30)}...</div>`;
+			return;
+		}
+
+		if (element) {
+			homeBannerContainer.appendChild(element);
+		}
+	} catch (e) {
+		console.error("Error creando elemento de banner:", e);
+		homeBannerContainer.innerHTML = '<div class="absolute inset-0 flex items-center justify-center bg-black text-red-500 font-pixel">Error al mostrar banner</div>';
+	}
+}
+
+/**
+ * Inicia los contadores de cuenta atrás para eventos.
+ */
+function startEventCountdowns() {
+	if (window.eventCountdownInterval) clearInterval(window.eventCountdownInterval);
+
+	const updateCountdowns = () => {
+		const now = new Date().getTime();
+		document.querySelectorAll('.event-countdown').forEach(el => {
+			const dateStr = el.dataset.date;
+			if (!dateStr) return;
+
+			const targetDate = new Date(dateStr).getTime();
+			const distance = targetDate - now;
+
+			if (distance < 0) {
+				el.innerHTML = "¡ES HOY!";
+				el.classList.add('animate-pulse');
+				return;
+			}
+
+			const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+			const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+			const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+			const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+			el.innerHTML = `<span class="text-[#F02D7D] font-bold text-xs" style="text-shadow: 0 0 2px #F02D7D;">FALTAN:</span> <span class="text-[#00FFFF] font-bold ml-1 text-glow-cyan">${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
+		});
+	};
+
+	updateCountdowns();
+	window.eventCountdownInterval = setInterval(updateCountdowns, 1000);
 }
 
 

@@ -45,7 +45,12 @@ function showPage(pageName) {
 			// Ejecutar init específicos por página
 			switch (pageName) {
 				case 'home':
-					renderHomeEvents(currentEvents);
+					if (typeof renderPastGalleries === 'function') renderPastGalleries(appState.events || []);
+					if (typeof renderHomeEvents === 'function') renderHomeEvents(currentEvents);
+					if (typeof renderBannerVideo === 'function') renderBannerVideo();
+					if (typeof renderAppLogo === 'function') renderAppLogo();
+					if (typeof renderNextEventPromo === 'function') renderNextEventPromo();
+					if (typeof renderCountdown === 'function') renderCountdown();
 					break;
 				case 'events':
 					renderPublicEvents(currentEvents);

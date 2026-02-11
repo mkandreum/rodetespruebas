@@ -3,6 +3,25 @@
  * Funciones de galerías de eventos y de drags
  */
 
+// DOM element references
+const pastGalleriesGrid = document.getElementById('past-galleries-grid');
+const galleryEventListContainer = document.getElementById('gallery-event-list-container');
+const galleryImageViewContainer = document.getElementById('gallery-image-view-container');
+const galleryImageViewTitle = document.getElementById('gallery-image-view-title');
+const galleryImageViewGrid = document.getElementById('gallery-image-view-grid');
+const dragListContainer = document.getElementById('drag-list-container');
+const dragGalleryViewContainer = document.getElementById('drag-gallery-view-container');
+
+/**
+ * Maneja el clic en un enlace de galería.
+ */
+function handleGalleryLink(e) {
+	const eventId = parseInt(e.currentTarget.dataset.eventId, 10);
+	if (isNaN(eventId)) return;
+	renderGalleryImages(eventId);
+	if (typeof showPage === 'function') showPage('gallery');
+}
+
 /**
  * Renderiza la lista de eventos con galerías en la página de Galería.
  */
