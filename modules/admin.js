@@ -496,17 +496,4 @@ async function handleMarkMerchDelivered(e) {
 	}
 }
 
-/**
- * Maneja el cambio en el select de drag en admin merch.
- * Extraído de app-old-broken.js líneas 3462-3466
- */
-function handleAdminMerchDragSelect() {
-	const adminMerchSelectDrag = document.getElementById('adminMerchSelectDrag');
-	if (!adminMerchSelectDrag) return;
-	currentAdminMerchDragId = adminMerchSelectDrag.value ? parseInt(adminMerchSelectDrag.value) : null;
-	if (typeof renderAdminMerch === 'function') {
-		renderAdminMerch();
-	}
-}
-
 

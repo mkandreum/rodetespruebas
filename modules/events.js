@@ -130,7 +130,13 @@ async function handleSaveEvent(e) {
 		if (saveResult.ok) {
 			showInfoModal("EVENTO GUARDADO CORRECTAMENTE.", false, () => {
 				resetEventForm();
+				// Re-renderizar todas las vistas afectadas (como en app-old-broken.js líneas 5539-5544)
+				if (typeof renderPublicEvents === 'function') renderPublicEvents(appState.events);
+				if (typeof renderHomeEvents === 'function') renderHomeEvents(appState.events);
 				renderAdminEvents(appState.events);
+				if (typeof renderGiveawayEvents === 'function') renderGiveawayEvents(appState.events);
+				if (typeof renderNextEventPromo === 'function') renderNextEventPromo();
+				if (typeof loadContentToAdmin === 'function') loadContentToAdmin(); // Recargar select de galerías
 			});
 		}
 	} catch (error) {
@@ -183,29 +189,58 @@ async function handleDeleteEvent(e) {
 	const eventId = parseInt(e.currentTarget.dataset.eventId, 10);
 	if (!appState?.events) return;
 
-	const eventToDelete = appState.events.find(e => e.id === eventId);
-	if (!eventToDelete) return;
+	const eventIndex = appState.events.findIndex(e => e.id === eventId);
+	if (eventIndex === -1) return;
 
-	if (!confirm(`¿ESTÁS SEGURO DE QUE QUIERES ELIMINAR EL EVENTO "${eventToDelete.name || 'sin nombre'}"?`)) {
+	const eventToDelete = appState.events[eventIndex];
+	const eventName = eventToDelete.name || 'este evento';
+
+	if (!confirm(`¿ESTÁS SEGURO DE QUE QUIERES ELIMINAR EL EVENTO "${eventName}"?`)) {
 		return;
 	}
 
-	showLoading(true, "Eliminando evento...");
-
+	// Simulación de confirmación
+	console.warn(`Simulando confirmación para eliminar evento: ${eventName} (ID: ${eventId})`);
+	showLoading(true);
 	try {
-		appState.events = appState.events.filter(e => e.id !== eventId);
-		const saveResult = await saveAppState();
-		showLoading(false);
+		// Eliminar evento de appState
+		appState.events.splice(eventIndex, 1);
+		currentEvents = [...appState.events]; // Actualizar copia local
 
-		if (saveResult.ok) {
-			showInfoModal("EVENTO ELIMINADO CORRECTAMENTE.", false, () => {
-				renderAdminEvents(appState.events);
-			});
+		// Filtrar tickets asociados
+		const initialTicketCount = allTickets.length;
+		allTickets = allTickets.filter(t => t.eventId !== eventId);
+		const removedTicketCount = initialTicketCount - allTickets.length;
+		if (removedTicketCount > 0) {
+			console.log(`Eliminados ${removedTicketCount} tickets asociados al evento ${eventId}.`);
 		}
-	} catch (error) {
+
+		// Si se estaba editando este evento, resetear form
+		if (editingEventId === eventId) {
+			resetEventForm();
+		}
+
+		// Guardar ambos estados
+		await saveAppState();
+		await saveTicketState();
+
 		showLoading(false);
-		console.error("Error eliminando evento:", error);
-		showInfoModal(`Error: ${error.message}`, true);
+		showInfoModal(`EVENTO "${eventName}" Y SUS ENTRADAS ELIMINADOS.`, false);
+
+		// Re-renderizar TODO (como en app-old-broken.js líneas 5642-5649)
+		if (typeof renderPublicEvents === 'function') renderPublicEvents(currentEvents);
+		if (typeof renderHomeEvents === 'function') renderHomeEvents(currentEvents);
+		renderAdminEvents(currentEvents);
+		if (typeof renderGiveawayEvents === 'function') renderGiveawayEvents(currentEvents);
+		if (typeof renderGalleryEventList === 'function') renderGalleryEventList();
+		if (typeof renderPastGalleries === 'function') renderPastGalleries(currentEvents);
+		if (typeof renderNextEventPromo === 'function') renderNextEventPromo();
+		if (typeof loadContentToAdmin === 'function') loadContentToAdmin(); // Recargar selects
+
+	} catch (error) {
+		console.error("Error deleting event:", error);
+		showLoading(false);
+		showInfoModal("Error al eliminar el evento: " + error.message, true);
 	}
 }
 
@@ -216,29 +251,37 @@ async function handleArchiveEvent(e) {
 	const eventId = parseInt(e.currentTarget.dataset.eventId, 10);
 	if (!appState?.events) return;
 
-	const event = appState.events.find(e => e.id === eventId);
-	if (!event) return;
+	const eventIndex = appState.events.findIndex(ev => ev.id === eventId);
+	if (eventIndex === -1) return;
 
-	if (!confirm(`¿ARCHIVAR EL EVENTO "${event.name || 'sin nombre'}"?`)) {
+	const event = appState.events[eventIndex];
+	const newArchivedState = !event.isArchived;
+	const actionText = newArchivedState ? "archivar" : "desarchivar";
+
+	if (!confirm(`¿Quieres ${actionText} el evento "${event.name || 'sin nombre'}"?`)) {
 		return;
 	}
 
-	showLoading(true, "Archivando evento...");
-
+	showLoading(true);
 	try {
-		event.isArchived = true;
-		const saveResult = await saveAppState();
-		showLoading(false);
+		appState.events[eventIndex].isArchived = newArchivedState;
+		currentEvents = [...appState.events];
+		await saveAppState();
 
-		if (saveResult.ok) {
-			showInfoModal("EVENTO ARCHIVADO.", false, () => {
-				renderAdminEvents(appState.events);
-			});
-		}
+		showLoading(false);
+		const statusText = newArchivedState ? "archivado" : "activo";
+		showInfoModal(`EVENTO "${event.name}" MARCADO COMO ${statusText.toUpperCase()}.`, false);
+
+		// Re-renderizar vistas (como en app-old-broken.js líneas 5697-5701)
+		if (typeof renderPublicEvents === 'function') renderPublicEvents(currentEvents);
+		if (typeof renderHomeEvents === 'function') renderHomeEvents(currentEvents);
+		renderAdminEvents(currentEvents);
+		if (typeof loadContentToAdmin === 'function') loadContentToAdmin();
+
 	} catch (error) {
 		showLoading(false);
-		console.error("Error archivando evento:", error);
-		showInfoModal(`Error: ${error.message}`, true);
+		console.error("Error al archivar evento:", error);
+		showInfoModal("Error al cambiar el estado del evento: " + error.message, true);
 	}
 }
 

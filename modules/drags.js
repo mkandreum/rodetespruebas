@@ -119,7 +119,10 @@ async function handleSaveDrag(e) {
 		if (saveResult.ok) {
 			showInfoModal("DRAG GUARDADA CORRECTAMENTE.", false, () => {
 				resetDragForm();
-				renderAdminDrags(appState.drags);
+				// Re-renderizar vistas públicas y admin (como en app-old-broken.js líneas 3038-3040)
+				if (typeof renderDragList === 'function') renderDragList(); // Actualizar lista pública
+				renderAdminDrags(appState.drags); // Actualizar lista admin
+				if (typeof renderAdminMerch === 'function') renderAdminMerch(); // Actualizar select de merch
 			});
 		}
 	} catch (error) {
@@ -183,29 +186,54 @@ async function handleDeleteDrag(e) {
 	const dragId = parseInt(e.currentTarget.dataset.dragId, 10);
 	if (!appState) return;
 
-	const dragToDelete = appState.drags.find(d => d.id === dragId);
-	if (!dragToDelete) return;
+	const dragIndex = appState.drags.findIndex(d => d.id === dragId);
+	if (dragIndex === -1) return;
 
-	if (!confirm(`¿ESTÁS SEGURO DE QUE QUIERES ELIMINAR LA DRAG "${dragToDelete.name || 'sin nombre'}"?`)) {
+	const dragToDelete = appState.drags[dragIndex];
+	const dragName = dragToDelete.name || 'esta drag';
+
+	if (!confirm(`¿ESTÁS SEGURO DE QUE QUIERES ELIMINAR LA DRAG "${dragName}"?`)) {
 		return;
 	}
 
-	showLoading(true, "Eliminando drag...");
+	console.warn(`Simulando confirmación para eliminar drag: ${dragName} (ID: ${dragId})`);
+	showLoading(true);
 
 	try {
-		appState.drags = appState.drags.filter(d => d.id !== dragId);
-		const saveResult = await saveAppState();
-		showLoading(false);
+		// Eliminar drag del array
+		appState.drags.splice(dragIndex, 1);
 
-		if (saveResult.ok) {
-			showInfoModal("DRAG ELIMINADA CORRECTAMENTE.", false, () => {
-				renderAdminDrags(appState.drags);
-			});
+		// Filtrar ventas de merch de esta drag
+		const initialSalesCount = allMerchSales.length;
+		allMerchSales = allMerchSales.filter(s => s.dragId !== dragId);
+		const removedSalesCount = initialSalesCount - allMerchSales.length;
+		if (removedSalesCount > 0) {
+			console.log(`Eliminadas ${removedSalesCount} ventas de merch de la drag ${dragId}.`);
 		}
+
+		// Si se estaba editando esta drag, resetear form
+		if (editingDragId === dragId) {
+			resetDragForm();
+		}
+
+		// Guardar ambos estados
+		await Promise.all([
+			saveAppState(),
+			saveMerchSalesState()
+		]);
+
+		showLoading(false);
+		showInfoModal(`DRAG "${dragName}" Y SUS VENTAS ELIMINADAS.`, false);
+
+		// Re-renderizar vistas afectadas (como en app-old-broken.js líneas 3163-3165)
+		if (typeof renderDragList === 'function') renderDragList(); // Lista pública
+		renderAdminDrags(appState.drags); // Lista admin
+		if (typeof renderAdminMerch === 'function') renderAdminMerch(); // Actualizar select y lista de merch admin
+
 	} catch (error) {
 		showLoading(false);
-		console.error("Error eliminando drag:", error);
-		showInfoModal(`Error: ${error.message}`, true);
+		console.error("Error deleting drag:", error);
+		showInfoModal("Error al eliminar la drag: " + error.message, true);
 	}
 }
 
