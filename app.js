@@ -25,23 +25,17 @@ let pendingEventId = null;
 let editingEventId = null;
 let editingDragId = null;
 let editingGalleryId = null;
-let currentEventFilter = 'all';
-let editingMerchItemId = null;
-let currentAdminMerchDragId = null;
 let adminTapCounter = 0;
+
+// Form references (shared with modules)
+let addEventForm = null;
+let addDragForm = null;
+let addMerchItemForm = null;
+let emailForm = null;
 
 let currentImageModalGallery = [];
 let currentImageModalIndex = 0;
-let currentScannedTicketInfo = null;
 let html5QrCodeScanner = null;
-
-// ===== API URLs =====
-const SAVE_APP_STATE_URL = 'api/save.php';
-const SAVE_TICKETS_URL = 'api/save_tickets.php';
-const SAVE_MERCH_SALES_URL = 'api/save_merch_sales.php';
-const UPLOAD_URL = 'api/upload.php';
-const LOGIN_URL = 'auth/login.php';
-const LOGOUT_URL = 'auth/logout.php';
 
 // ===== FILE READER UTILITIES =====
 function readFileAsDataURL(file) {
@@ -168,101 +162,100 @@ window.addEventListener('DOMContentLoaded', async () => {
 	document.querySelectorAll('#mobile-menu a[data-nav]').forEach(el => mobileNavLinks[el.dataset.nav] = el);
 
 	const navActiveIndicator = document.querySelector('.nav-active-indicator');
-	const loginForm = document.getElementById('loginForm');
-	const adminPanel = document.getElementById('administratorPage');
+	const loginForm = document.getElementById('login-form');
+	const adminPanel = document.getElementById('admin-panel');
 	const mobileMenu = document.getElementById('mobile-menu');
 	const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-	const homeEventListContainer = document.getElementById('home-events-container');
 	const viewAllEventsBtn = document.getElementById('view-all-events-btn');
 	const logoBtn = document.getElementById('logo-btn');
 	const scanQrBtn = document.getElementById('scan-qr-btn');
 
 	// Form elements references
-	const addEventForm = document.getElementById('addEventForm');
-	const clearEventFormButton = document.getElementById('clearEventFormButton');
-	const addDragForm = document.getElementById('addDragForm');
-	const clearDragFormButton = document.getElementById('clearDragFormButton');
-	const addMerchItemForm = document.getElementById('addMerchItemForm');
-	const clearMerchItemFormButton = document.getElementById('clearMerchItemFormButton');
+	addEventForm = document.getElementById('add-event-form');
+	const clearEventFormButton = document.getElementById('clear-event-form-button');
+	addDragForm = document.getElementById('add-drag-form');
+	const clearDragFormButton = document.getElementById('clear-drag-form-button');
+	addMerchItemForm = document.getElementById('drag-merch-form');
+	const clearMerchItemFormButton = document.getElementById('cancel-drag-merch-btn');
 
 	// Upload input references
-	const eventPosterUploadInput = document.getElementById('eventPosterUploadInput');
-	const eventPosterUrlInput = document.getElementById('eventPosterUrl');
-	const appLogoUploadInput = document.getElementById('appLogoUploadInput');
-	const appLogoUrlInput = document.getElementById('appLogoUrl');
-	const ticketLogoUploadInput = document.getElementById('ticketLogoUploadInput');
-	const ticketLogoUrlInput = document.getElementById('ticketLogoUrl');
-	const bannerUploadInput = document.getElementById('bannerUploadInput');
-	const bannerUrlInput = document.getElementById('bannerUrl');
-	const galleryUploadInput = document.getElementById('galleryUploadInput');
-	const dragCoverUploadInput = document.getElementById('dragCoverUploadInput');
-	const dragCoverUrlInput = document.getElementById('dragCoverUrl');
-	const dragGalleryUploadInput = document.getElementById('dragGalleryUploadInput');
-	const merchItemImageUploadInput = document.getElementById('merchItemImageUploadInput');
-	const merchItemImageUrlInput = document.getElementById('merchItemImageUrl');
+	const eventPosterUploadInput = document.getElementById('event-poster-upload');
+	const eventPosterUrlInput = document.getElementById('event-poster-url');
+	const appLogoUploadInput = document.getElementById('app-logo-upload');
+	const appLogoUrlInput = document.getElementById('app-logo-url');
+	const ticketLogoUploadInput = document.getElementById('ticket-logo-upload');
+	const ticketLogoUrlInput = document.getElementById('ticket-logo-url');
+	const bannerUploadInput = document.getElementById('banner-upload');
+	const bannerUrlInput = document.getElementById('banner-url');
+	const galleryUploadInput = document.getElementById('gallery-upload');
+	const dragCoverUploadInput = document.getElementById('drag-cover-upload');
+	const dragCoverUrlInput = document.getElementById('drag-cover-url');
+	const dragGalleryUploadInput = document.getElementById('drag-gallery-upload');
+	const merchItemImageUploadInput = document.getElementById('web-merch-image-upload');
+	const merchItemImageUrlInput = document.getElementById('web-merch-image-url');
 
 	// Merch references
-	const merchPurchaseForm = document.getElementById('merchPurchaseForm');
-	const downloadMerchQrBtn = document.getElementById('downloadMerchQrBtn');
-	const adminMerchSelectDrag = document.getElementById('adminMerchSelectDrag');
-	const adminMerchViewSalesBtn = document.getElementById('adminMerchViewSalesBtn');
+	const merchPurchaseForm = document.getElementById('merch-purchase-form');
+	const downloadMerchQrBtn = document.getElementById('download-merch-qr-btn');
+	const adminMerchSelectDrag = document.getElementById('drag-merch-select-drag');
+	const adminMerchViewSalesBtn = document.getElementById('drag-merch-view-sales-btn');
 
 	// Gallery references
-	const contentManageForm = document.getElementById('contentManageForm');
-	const galleryManageForm = document.getElementById('galleryManageForm');
-	const galleryEventSelect = document.getElementById('galleryEventSelect');
-	const galleryBackBtn = document.getElementById('galleryBackBtn');
-	const dragGalleryBackBtn = document.getElementById('dragGalleryBackBtn');
+	const contentManageForm = document.getElementById('content-manage-form');
+	const galleryManageForm = document.getElementById('gallery-manage-form');
+	const galleryEventSelect = document.getElementById('gallery-event-select');
+	const galleryBackBtn = document.getElementById('gallery-back-btn');
+	const dragGalleryBackBtn = document.getElementById('drag-gallery-back-btn');
 
 	// Ticket references
-	const emailForm = document.getElementById('emailForm');
-	const downloadTicketBtn = document.getElementById('downloadTicketBtn');
+	emailForm = document.getElementById('email-form');
+	const downloadTicketBtn = document.getElementById('download-ticket-btn');
 
 	// Scanner references
-	const scanBackBtn = document.getElementById('scanBackBtn');
-	const scannerConfirmBtn = document.getElementById('scannerConfirmBtn');
-	const scannerCancelBtn = document.getElementById('scannerCancelBtn');
-	const scannerQuantityInput = document.getElementById('scannerQuantityInput');
-	const adminScannerView = document.getElementById('adminScannerView');
-	const adminMainView = document.getElementById('adminMainView');
+	const scanBackBtn = document.getElementById('scan-back-btn');
+	const scannerConfirmBtn = document.getElementById('scanner-confirm-btn');
+	const scannerCancelBtn = document.getElementById('scanner-cancel-btn');
+	const scannerQuantityInput = document.getElementById('scanner-quantity-input');
+	const adminScannerView = document.getElementById('admin-scanner-view');
+	const adminMainView = document.getElementById('admin-main-view');
 	const scannerVideoRegion = document.getElementById('scanner-video-region');
-	const scannerMessage = document.getElementById('scannerMessage');
-	const scannerInputView = document.getElementById('scannerInputView');
-	const scannerInputMessage = document.getElementById('scannerInputMessage');
-	const scannerCloseBtn = document.getElementById('scannerCloseBtn');
+	const scannerMessage = document.getElementById('scanner-message');
+	const scannerInputView = document.getElementById('scanner-input-view');
+	const scannerInputMessage = document.getElementById('scanner-input-message');
+	const scannerCloseBtn = document.getElementById('scanner-close-btn');
 
 	// Backup/restore references
-	const backupBtn = document.getElementById('backupBtn');
-	const restoreInput = document.getElementById('restoreInput');
+	const backupBtn = document.getElementById('backup-btn');
+	const restoreInput = document.getElementById('restore-input');
 
 	// Auth references
-	const logoutBtn = document.getElementById('adminLogoutBtn');
+	const logoutBtn = document.getElementById('admin-logout-btn');
 
 	// SMTP references
-	const smtpConfigForm = document.getElementById('smtpConfigForm');
-	const testSMTPBtn = document.getElementById('testSMTPBtn');
-	const dragEmailSelect = document.getElementById('dragEmailSelect');
-	const saveDragEmailConfigBtn = document.getElementById('saveDragEmailConfigBtn');
-	const saveWebMerchConfigBtn = document.getElementById('saveWebMerchConfigBtn');
+	const smtpConfigForm = document.getElementById('smtp-config-form');
+	const testSMTPBtn = document.getElementById('test-smtp-btn');
+	const dragEmailSelect = document.getElementById('drag-email-select');
+	const saveDragEmailConfigBtn = document.getElementById('save-drag-email-config-btn');
+	const saveWebMerchConfigBtn = document.getElementById('save-web-merch-config-btn');
 
 	// Image modal references
-	const imageModalPrevBtn = document.getElementById('imageModalPrevBtn');
-	const imageModalNextBtn = document.getElementById('imageModalNextBtn');
+	const imageModalPrevBtn = document.getElementById('image-modal-prev-btn');
+	const imageModalNextBtn = document.getElementById('image-modal-next-btn');
 
 	// Web/Drag merch references
-	const addWebMerchBtn = document.getElementById('addWebMerchBtn');
-	const webMerchForm = document.getElementById('webMerchForm');
-	const cancelWebMerchBtn = document.getElementById('cancelWebMerchBtn');
-	const webMerchImageUploadInput = document.getElementById('webMerchImageUploadInput');
-	const webMerchImageUrlInput = document.getElementById('webMerchImageUrl');
-	const webMerchViewSalesBtn = document.getElementById('webMerchViewSalesBtn');
-	const dragMerchSelectDrag = document.getElementById('dragMerchSelectDrag');
-	const addDragMerchBtn =document.getElementById('addDragMerchBtn');
-	const dragMerchForm = document.getElementById('dragMerchForm');
-	const cancelDragMerchBtn = document.getElementById('cancelDragMerchBtn');
-	const dragMerchImageUploadInput = document.getElementById('dragMerchImageUploadInput');
-	const dragMerchImageUrlInput = document.getElementById('dragMerchImageUrl');
-	const dragMerchViewSalesBtn = document.getElementById('dragMerchViewSalesBtn');
+	const addWebMerchBtn = document.getElementById('add-web-merch-btn');
+	const webMerchForm = document.getElementById('web-merch-form');
+	const cancelWebMerchBtn = document.getElementById('cancel-web-merch-btn');
+	const webMerchImageUploadInput = document.getElementById('web-merch-image-upload');
+	const webMerchImageUrlInput = document.getElementById('web-merch-image-url');
+	const webMerchViewSalesBtn = document.getElementById('web-merch-view-sales-btn');
+	const dragMerchSelectDrag = document.getElementById('drag-merch-select-drag');
+	const addDragMerchBtn =document.getElementById('add-drag-merch-btn');
+	const dragMerchForm = document.getElementById('drag-merch-form');
+	const cancelDragMerchBtn = document.getElementById('cancel-drag-merch-btn');
+	const dragMerchImageUploadInput = document.getElementById('drag-merch-image-upload');
+	const dragMerchImageUrlInput = document.getElementById('drag-merch-image-url');
+	const dragMerchViewSalesBtn = document.getElementById('drag-merch-view-sales-btn');
 
 	// ===== EVENT LISTENERS =====
 

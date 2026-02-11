@@ -14,7 +14,7 @@ let currentSelectedDragForMerch = null;
  * Muestra el formulario de Web Merch
  */
 function showWebMerchForm() {
-	const webMerchForm = document.getElementById('webMerchForm');
+	const webMerchForm = document.getElementById('web-merch-form');
 	if (!webMerchForm) return;
 	webMerchForm.classList.remove('hidden');
 	resetWebMerchForm();
@@ -24,7 +24,7 @@ function showWebMerchForm() {
  * Oculta y resetea el formulario de Web Merch
  */
 function hideWebMerchForm() {
-	const webMerchForm = document.getElementById('webMerchForm');
+	const webMerchForm = document.getElementById('web-merch-form');
 	if (!webMerchForm) return;
 	webMerchForm.classList.add('hidden');
 	resetWebMerchForm();
@@ -34,13 +34,13 @@ function hideWebMerchForm() {
  * Resetea el formulario de Web Merch
  */
 function resetWebMerchForm() {
-	const webMerchForm = document.getElementById('webMerchForm');
+	const webMerchForm = document.getElementById('web-merch-form');
 	if (!webMerchForm) return;
 	webMerchForm.reset();
 	editingWebMerchId = null;
 	const editIdInput = document.getElementById('edit-web-merch-id');
 	if (editIdInput) editIdInput.value = '';
-	const uploadInput = document.getElementById('webMerchImageUploadInput');
+	const uploadInput = document.getElementById('web-merch-image-upload');
 	if (uploadInput) uploadInput.value = '';
 }
 
@@ -48,7 +48,7 @@ function resetWebMerchForm() {
  * Renderiza la lista de Web Merch en el admin
  */
 function renderWebMerchList() {
-	const webMerchListContainer = document.getElementById('webMerchListContainer');
+	const webMerchListContainer = document.getElementById('admin-web-merch-list-container');
 	if (!webMerchListContainer || !appState || !appState.webMerch) return;
 	
 	if (typeof clearDynamicListListeners === 'function') {
@@ -102,7 +102,7 @@ function renderWebMerchList() {
  */
 async function handleSaveWebMerch(e) {
 	e.preventDefault();
-	const webMerchForm = document.getElementById('webMerchForm');
+	const webMerchForm = document.getElementById('web-merch-form');
 	if (!webMerchForm || !appState) return;
 
 	const formData = new FormData(webMerchForm);
@@ -174,7 +174,7 @@ async function handleSaveWebMerch(e) {
  * Maneja la edición de un artículo de Web Merch
  */
 function handleEditWebMerch(e) {
-	const webMerchForm = document.getElementById('webMerchForm');
+	const webMerchForm = document.getElementById('web-merch-form');
 	if (!appState || !webMerchForm) return;
 	const merchId = parseInt(e.currentTarget.dataset.webMerchId, 10);
 	if (isNaN(merchId)) return;
@@ -191,13 +191,13 @@ function handleEditWebMerch(e) {
 	const editIdInput = document.getElementById('edit-web-merch-id');
 	if (editIdInput) editIdInput.value = itemToEdit.id;
 
-	const nameInput = document.getElementById('webMerchName');
+	const nameInput = document.getElementById('web-merch-name');
 	if (nameInput) nameInput.value = itemToEdit.name || '';
 
-	const priceInput = document.getElementById('webMerchPrice');
+	const priceInput = document.getElementById('web-merch-price');
 	if (priceInput) priceInput.value = itemToEdit.price || 0;
 
-	const urlInput = document.getElementById('webMerchImageUrl');
+	const urlInput = document.getElementById('web-merch-image-url');
 	if (urlInput) urlInput.value = itemToEdit.imageUrl || '';
 
 	editingWebMerchId = itemToEdit.id;
@@ -255,10 +255,10 @@ async function handleDeleteWebMerch(e) {
  * Renderiza el resumen de ventas de Web Merch
  */
 function renderWebMerchSalesSummary() {
-	const webMerchSalesSummary = document.getElementById('webMerchSalesSummary');
-	const webMerchTotalItems = document.getElementById('webMerchTotalItems');
-	const webMerchTotalRevenue = document.getElementById('webMerchTotalRevenue');
-	const webMerchViewSalesBtn = document.getElementById('webMerchViewSalesBtn');
+	const webMerchSalesSummary = document.getElementById('web-merch-sales-summary');
+	const webMerchTotalItems = document.getElementById('web-merch-total-items');
+	const webMerchTotalRevenue = document.getElementById('web-merch-total-revenue');
+	const webMerchViewSalesBtn = document.getElementById('web-merch-view-sales-btn');
 
 	if (!webMerchSalesSummary || !webMerchTotalItems || !webMerchTotalRevenue || !webMerchViewSalesBtn) return;
 
