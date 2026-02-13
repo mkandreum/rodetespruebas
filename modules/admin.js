@@ -10,7 +10,7 @@ let currentEventFilter = 'all';
  */
 function showAdminPage(adminPageId) {
 	if (!isLoggedIn) {
-		showPage('login');
+		showPage('admin');
 		return;
 	}
 

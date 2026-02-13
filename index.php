@@ -534,7 +534,7 @@ $csrfToken = $isLoggedIn ? generateCSRFToken() : '';
                         <button id="scan-qr-btn"
                             class="bg-white text-black font-pixel text-lg px-4 py-2 rounded-none border border-gray-400 hover:bg-gray-300">
                             ESCANEAR QR </button>
-                        <button id="logout-btn"
+                        <button id="admin-logout-btn"
                             class="bg-gray-700 text-white font-pixel text-lg px-4 py-2 rounded-none hover:bg-gray-600">
                             CERRAR SESIÓN </button>
                     </div>

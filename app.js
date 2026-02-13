@@ -522,6 +522,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 	if (typeof renderNextEventPromo === 'function') renderNextEventPromo();
 	if (typeof showPage === 'function') showPage('home');
 
+	// Ensure nav indicator position is correct after layout is complete
+	requestAnimationFrame(() => {
+		if (typeof updateNavIndicator === 'function') updateNavIndicator('home');
+	});
+
 	console.log("✅ Application ready!");
 });
 
