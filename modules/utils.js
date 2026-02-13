@@ -70,7 +70,7 @@ function updateNavIndicator(pageId) {
 // --- Modal and UI Functions ---
 function showLoading(isLoading, message = "Cargando...", percent = null) {
 	const loadingModal = document.getElementById('loading-modal');
-	const loadingText = document.getElementById('loading-text');
+	const loadingText = document.getElementById('loading-title');
 	const loadingPercent = document.getElementById('loading-percent');
 
 	if (!loadingModal) return;
@@ -97,7 +97,7 @@ function showInfoModal(message, isError = false, onClose = null) {
 	const isSuccess = !isError && successKeywords.some(kw => message.toLowerCase().includes(kw));
 
 	const infoModal = document.getElementById('info-modal');
-	const infoText = document.getElementById('info-text');
+	const infoText = document.getElementById('info-modal-text');
 
 	if (!infoModal || !infoText) return;
 

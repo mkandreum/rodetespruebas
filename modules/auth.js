@@ -39,8 +39,8 @@ async function handleAdminLogin(event) {
 			showInfoModal("✅ ACCESO CONCEDIDO", false, () => {
 			document.getElementById('email').value = '';
 			document.getElementById('password').value = '';
-				showAdminPage();
 				checkAdminUI();
+				showAdminPage('events');
 			});
 		} else {
 			showLoading(false);
@@ -77,7 +77,7 @@ async function handleLogout() {
 		localStorage.removeItem('adminEmail');
 
 		showLoading(false);
-		showPage('login');
+		showPage('admin');
 		showInfoModal("✅ SESIÓN CERRADA", false);
 
 	} catch (error) {
