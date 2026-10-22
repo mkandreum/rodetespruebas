@@ -1,4 +1,4 @@
-FROM php:8.2.35-apache
+FROM php:8.4.27-apache
 
 # Instalar dependencias necesarias (ej. zip para backups, librerías para GD)
 RUN apt-get update && apt-get install -y \
